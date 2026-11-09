@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# carbonOrbit
+venv/
+.env
+*.db
+data/raw/
+data/simulated/
+results/tmp/
+.vscode/

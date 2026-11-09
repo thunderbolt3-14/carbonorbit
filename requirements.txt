@@ -1,0 +1,9 @@
+flask
+pandas
+numpy
+scipy
+scikit-learn
+matplotlib
+pyyaml
+requests
+pytest
