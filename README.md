@@ -16,7 +16,8 @@ scenario-based estimates, not measurements.
 |------|-----|------|
 | (Owner) | | Backend, API, database, CI |
 | | | Data, simulator, reliability labels |
-| | | Dashboard, figures, testing |
+| Lakkadasu Daneswar Naga Sai | 1TE24CS150 | Dashboard, figures, testing |
+
 | | | ETA models, emissions, statistics |
 
 Guide: (name)
