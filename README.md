@@ -17,7 +17,7 @@ scenario-based estimates, not measurements.
 | (Owner) | | Backend, API, database, CI |
 | | | Data, simulator, reliability labels |
 | | | Dashboard, figures, testing |
-| | | ETA models, emissions, statistics |
+|Rahul v |1BY24CS332 | ETA models, emissions, statistics |
 
 Guide: (name)
 
