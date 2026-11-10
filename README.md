@@ -18,6 +18,9 @@ scenario-based estimates, not measurements.
 | | | Data, simulator, reliability labels |
 | | | Dashboard, figures, testing |
 |Rahul v |1BY24CS332 | ETA models, emissions, statistics |
+| Lakkadasu Daneswar Naga Sai | 1TE24CS150 | Dashboard, figures, testing |
+
+| | | ETA models, emissions, statistics |
 
 Guide: (name)
 
