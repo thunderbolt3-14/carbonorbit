@@ -1,9 +1,6 @@
-cat > README.md << 'EOF'
 # carbonOrbit
 
 Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility
-
-BMSIT&M | V Sem Environmental Science Mini Project | SDG 11, SDG 13
 
 ## Summary
 An open, reproducible pipeline that predicts bus arrival times, detects delays and
@@ -12,15 +9,12 @@ Validated on simulated GPS over real BMTC routes. All environmental results are
 scenario-based estimates, not measurements.
 
 ## Team
-| Name | USN | Role |
-|------|-----|------|
-| (Owner) | | Backend, API, database, CI |
-| | | Data, simulator, reliability labels |
-| Lakkadasu Daneswar Naga Sai | 1TE24CS150 | Dashboard, figures, testing |
-
-| | | ETA models, emissions, statistics |
-
-Guide: (name)
+| Name | Role |
+|------|------|
+| R.Dhrutvan  | Backend, API, database, CI |
+| Rahul A.M   | Data, simulator, reliability labels |
+| L.Daneswar  | Dashboard, figures, testing |
+| V.Rahul     | ETA models, emissions, statistics |
 
 ## Setup (Windows, Git Bash)
     git clone https://github.com/thunderbolt3-14/carbonorbit.git
