@@ -91,7 +91,7 @@ Directly supports carbonOrbit's core thesis: improving bus reliability and real-
 ## 4. TERI (2023) — Per-Passenger Emissions in Delhi (CarbonLite Methodology)
 
 ### Citation and Link
-The Energy and Resources Institute (TERI) & Delhi Metro Rail Corporation (DMRC). (2023). Comparative Study of Per-Passenger-Kilometre $\text{CO}_2$ Emissions Across Urban Motorized Transport Modes in Delhi (CarbonLite Metro Travel Initiative). TERI, New Delhi.URL: https://new.delhimetrorail.com/en/carbonlite-metro-travel | https://www.teriin.org/files/TERI-Annual-Report-2023-24.pdf
+The Energy and Resources Institute (TERI) & Delhi Metro Rail Corporation (DMRC). (2023). Comparative Study of Per-Passenger-Kilometre $\text{CO}_2$ Emissions Across Urban Motorized Transport Modes in Delhi (CarbonLite Metro Travel Initiative). TERI, New Delhi. URL: https://new.delhimetrorail.com/en/carbonlite-metro-travel | https://www.teriin.org/files/TERI-Annual-Report-2023-24.pdf
 
 ### Problem and Data Used
 Commuters rarely see tangible environmental feedback from their daily mode choices, limiting behavioural nudges toward public transit. TERI conducted an empirical emissions benchmarking study in Delhi comparing metro rail against five road modes: city buses, private cars, cabs/taxis, three-wheelers (auto-rickshaws), and two-wheelers, using Delhi fleet fuel-efficiency distributions, fuel emission factors, and average passenger occupancy surveys.
@@ -100,13 +100,13 @@ Commuters rarely see tangible environmental feedback from their daily mode choic
 Fuel consumption per vehicle-kilometre was converted into tailpipe/operational $\text{CO}_2$ emissions using India-specific emission factors and divided by observed modal occupancy rates to derive standardized per-passenger-kilometre (g CO2/pkm) emission intensities. These factors were integrated into DMRC's ticketing system to display trip-level $\text{CO}_2$ savings directly to passengers.
 
 ### Key Result and Its Units
-Quantified mode-by-mode per-passenger emission intensities in g CO2 / passenger-km, demonstrating that switching a single commuter trip from a private car to mass transit saves approximately 32.4 grams of $\text{CO}_2$ per kilometre (g CO2/pkm).Showed that displaying personalized per-trip carbon savings on commuter interfaces acts as an actionable behavioural nudge toward sustainable public transport.
+Quantified mode-by-mode per-passenger emission intensities in g CO2 / passenger-km, demonstrating that switching a single commuter trip from a private car to mass transit saves approximately 32.4 grams of $\text{CO}_2$ per kilometre (g CO2/pkm). Showed that displaying personalized per-trip carbon savings on commuter interfaces acts as an actionable behavioural nudge toward sustainable public transport.
 
 ### Limitation or Gap
-Calibrated specifically to Delhi's fuel mix (heavy CNG adoption in buses and autos) and flat terrain, which differs from Bengaluru's BMTC fleet (predominantly diesel + expanding electric buses) and corridor congestion profiles.Uses static average occupancy and speed factors rather than live vehicle speed/delay variations.
+Calibrated specifically to Delhi's fuel mix (heavy CNG adoption in buses and autos) and flat terrain, which differs from Bengaluru's BMTC fleet (predominantly diesel + expanding electric buses) and corridor congestion profiles. Uses static average occupancy and speed factors rather than live vehicle speed/delay variations.
 
 ### What carbonOrbit Can Use From It
-Serves as the direct methodological blueprint for carbonOrbit's Commuter Carbon Savings Calculator—computing the delta between a displaced private vehicle (2W or car) and a BMTC bus trip in g CO2/pkm.Validates the user-facing dashboard design of showing real-time $\text{CO}_2$ avoided per commuter trip.
+Serves as the direct methodological blueprint for carbonOrbit's Commuter Carbon Savings Calculator—computing the delta between a displaced private vehicle (2W or car) and a BMTC bus trip in g CO2/pkm. Validates the user-facing dashboard design of showing real-time $\text{CO}_2$ avoided per commuter trip.
 
 ### Potential Examiner Question
 
@@ -129,7 +129,7 @@ Service providers (including public transit agencies) frequently misallocate res
 Combines Multiple Linear Regression (MLR) with Importance-Performance Analysis (IPA) to derive implicit attribute importance (regression weights linking specific service attributes to overall user satisfaction) rather than relying on biased self-reported importance scores. Attributes are mapped onto a four-quadrant matrix (Concentrate Here / Major Weaknesses, Keep Up the Good Work, Low Priority, Possible Overkill) to prioritize high-impact interventions.
 
 ### Key Result and Its Units
-Demonstrates quantitatively (via standardized regression coefficients $\beta$ and quadrant diagnosticity metrics) that attributes with high implicit impact on user satisfaction but low current operational performance ("Concentrate Here" quadrant) act as the primary bottlenecks driving user defection.Fixing high-importance, low-performance operational gaps produces the largest marginal gain in user retention and mode preference.
+Demonstrates quantitatively (via standardized regression coefficients $\beta$ and quadrant diagnosticity metrics) that attributes with high implicit impact on user satisfaction but low current operational performance ("Concentrate Here" quadrant) act as the primary bottlenecks driving user defection. Fixing high-importance, low-performance operational gaps produces the largest marginal gain in user retention and mode preference.
 
 ### Limitation or Gap
 The empirical validation case study in the paper was conducted on service organizations rather than directly measuring tailpipe emissions; therefore, connecting service-quality improvements to $\text{CO}_2$ reductions requires pairing behavioral modal-shift elasticities with physical emission models.
@@ -141,7 +141,9 @@ Provides the analytical rationale for why carbonOrbit targets schedule reliabili
 
 > Why is a service-attribute prioritization paper like Wills et al. (2019) included in an Environmental Science project on bus emissions?
 
-**Answer angle:** Emissions only drop if commuters actually choose buses over private vehicles. Wills et al. provide the quantitative framework showing that fixing high-importance, low-performance bottlenecks—specifically arrival time unpredictability and bunching—is the decisive lever for retaining riders and inducing modal shift.## Summary Matrix for carbonOrbit Pipeline Integration
+**Answer angle:** Emissions only drop if commuters actually choose buses over private vehicles. Wills et al. provide the quantitative framework showing that fixing high-importance, low-performance bottlenecks—specifically arrival time unpredictability and bunching—is the decisive lever for retaining riders and inducing modal shift.
+
+## Summary Matrix for carbonOrbit Pipeline Integration
 
 | Source | Primary Metric / Unit | Key Takeaway for carbonOrbit |
 |---|---|---|
