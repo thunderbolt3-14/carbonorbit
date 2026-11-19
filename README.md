@@ -3,10 +3,11 @@
 Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility
 
 ## Summary
-An open, reproducible pipeline that predicts bus arrival times, detects delays and
-bus bunching, and estimates the CO2 and PM implications of better transit information.
-Validated on simulated GPS over real BMTC routes. All environmental results are
-scenario-based estimates, not measurements.
+An open, reproducible project plan for bus arrival-time prediction, delay and
+bus-bunching detection, and scenario-based environmental estimates. The proposed
+evaluation uses synthetic GPS on BMTC route geometry; no simulator results or live
+BMTC vehicle-data validation are available yet. Environmental outputs will be
+assumption-based estimates, not measured effects.
 
 ## Team
 | Name | Role |
@@ -34,4 +35,6 @@ scenario-based estimates, not measurements.
 - tests/ and scripts/ : automated tests and run scripts
 
 ## Status
-Phase 0: repository and workflow set up.
+Phase 1: shared research and evaluation drafts are in the repository. The GTFS
+snapshot and route audit, source corrections, and team/guide approval of the
+evaluation protocol remain open before implementation and protocol freeze.
