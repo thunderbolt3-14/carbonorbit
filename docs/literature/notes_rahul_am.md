@@ -17,7 +17,7 @@
 
 ## 2. Rakhimzhanov and Mansurova (2025) — Prediction with Limited Data
 
-**Citation:** Rakhimzhanov, D., & Mansurova, A. (2025). “Bus Travel Time Prediction Under Data Constraints: A Lightweight Deep Learning Approach.” *Proceedings of the 2025 International Conference on Computational Intelligence and Knowledge Economy*, pp. 444–449. [https://doi.org/10.1109/ICCIKE67021.2025.11318207](https://doi.org/10.1109/ICCIKE67021.2025.11318207)
+**Citation:** Rakhimzhanov, D., & Mansurova, A. (2025). “Bus Travel Time Prediction Under Data Constraints: A Lightweight Deep Learning Approach.” *Proceedings of the 2025 International Conference on Computational Intelligence and Knowledge Economy*, pp. 444–449. [https://doi.org/10.1109/ICCIKE67021.2025.11318207](https://doi.org/10.1109/ICCIKE67021.2025.11318207). This conference paper is distinct from Mansurova et al.'s open Astana GPS-to-GTFS dataset paper listed below.
 
 - **Problem:** Predicting bus travel times when external information such as weather or traffic feeds is unavailable.
 - **Data:** Real bus routes in Kandy, Sri Lanka, and Astana, Kazakhstan.
@@ -63,6 +63,18 @@
 - **What carbonOrbit can reuse:** Use it as context for evaluating the broader value of real-time information, while avoiding claims that the same ridership effect will occur in our project.
 - **Examiner question and answer:** **Why include both the Chicago and New York studies?** They examine different cities and rollouts, offering context, but neither directly validates our simulator or predicts BMTC outcomes.
 
+## 6. Mansurova et al. (2025) — Astana GPS-to-GTFS Dataset
+
+**Citation:** Mansurova, A., Mussina, A., Aubakirov, S., Nugumanova, A., & Yedilkhan, D. (2025). “From Raw GPS to GTFS: A Real-World Open Dataset for Bus Travel Time Prediction.” *Data*, 10(8), 119. [https://doi.org/10.3390/data10080119](https://doi.org/10.3390/data10080119). Associated dataset: [Zenodo record 15769359](https://doi.org/10.5281/zenodo.15769359).
+
+- **Problem:** Public-transport prediction research needs accessible operational data and a reproducible path from raw vehicle GPS to timetable-compatible records.
+- **Data:** GPS trajectories from three high-frequency bus routes in Astana, Kazakhstan, collected July–September 2024 and published with processed GTFS-related data.
+- **Method:** The authors describe processing raw trajectories into a documented dataset intended for bus travel-time prediction; consult the full article and repository documentation before reproducing exact processing steps.
+- **Metrics and key result:** This is a data descriptor, not a model leaderboard. Its main contribution is an openly documented real-world dataset and processing resource; do not attribute model accuracy results to it.
+- **Limitation or gap:** The network and operating conditions are Astana-specific. It does not validate a Bengaluru model and must not be conflated with the separately cited ICCIKE 2025 prediction paper.
+- **What carbonOrbit can reuse:** Use its data-documentation and raw-GPS-to-structured-transit workflow as a reproducibility reference. The team may consider the dataset only as an external comparison after reviewing access, licence, and scope; it is not a substitute for BMTC route geometry.
+- **Examiner question and answer:** **Does this paper show that a model will work on BMTC?** No. It provides an Astana dataset and data-processing resource; BMTC performance needs separate evaluation.
+
 ## Overall takeaway
 
 These papers cover system design, travel-time prediction, delay analysis, and the possible passenger effects of real-time information. Their results come from different cities and data types. carbonOrbit should evaluate its own simulated data, report its own metrics, and describe ridership or emissions impacts as estimates rather than measured outcomes.
@@ -71,6 +83,7 @@ These papers cover system design, travel-time prediction, delay analysis, and th
 
 - Ganesh et al. (2012): [arXiv paper](https://arxiv.org/abs/1206.0447)
 - Rakhimzhanov and Mansurova (2025): [conference paper DOI](https://doi.org/10.1109/ICCIKE67021.2025.11318207)
+- Mansurova et al. (2025): [Data article](https://doi.org/10.3390/data10080119); [associated Zenodo dataset](https://doi.org/10.5281/zenodo.15769359)
 - Aemmer et al. (2022): [Penn State publication record and DOI](https://pure.psu.edu/en/publications/measurement-and-classification-of-transit-delays-using-gtfs-rt-da/)
 - Brakewood et al. (2015): [paper DOI](https://doi.org/10.1016/j.trc.2015.01.021)
 - Tang and Thakuriah (2012): [paper DOI](https://doi.org/10.1016/j.trc.2012.01.001)

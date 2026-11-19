@@ -114,34 +114,34 @@ Serves as the direct methodological blueprint for carbonOrbit's Commuter Carbon 
 
 **Answer angle:** While TERI uses static average emission factors for Delhi's CNG-heavy fleet and Metro, carbonOrbit calibrates emission factors for Bengaluru's diesel and electric BMTC buses and adjusts emissions dynamically based on real-time segment speeds and congestion delays.
 
-## 5. Wills et al. (2019) — Service Attribute Prioritization & Modal Shift Dynamics
+## 5. Wills et al. (2019) — GPS-Based Bus Greenhouse-Gas Estimation
 
 ### Citation and Link
-Phadermrod, B., Crowder, R. M., & Wills, G. B. (2019). Importance-Performance Analysis based SWOT analysis. International Journal of Information Management, 44, 194–203. (Note: Cross-referenced in our literature survey alongside urban transit real-time passenger information and modal-shift adoption studies; verify exact URL/DOI from team reference sheet before final report freeze).
+Wills, W., Meirelles, J., Baptista, V. G., Cury, G., & Cerdeira, P. (2019). “A Simple Sinuosity-Based Method Using GPS Data to Support Mitigation Policies for Public Buses GHG Emissions.” [arXiv:1907.09335](https://arxiv.org/abs/1907.09335), DOI: [10.48550/arXiv.1907.09335](https://doi.org/10.48550/arXiv.1907.09335). This is the preprint matching the team’s source list; it is not the Phadermrod et al. importance-performance-analysis paper.
 
 ### DOI
-https://doi.org/10.1016/j.ijinfomgt.2016.03.009
+https://doi.org/10.48550/arXiv.1907.09335
 
 ### Problem and Data Used
-Service providers (including public transit agencies) frequently misallocate resources because traditional strategic evaluations treat all service attributes as equally important or rely on subjective management opinions rather than empirical commuter perception data. The study analyzes multi-attribute user satisfaction survey datasets where users rate performance across distinct operational attributes alongside overall service satisfaction.
+The paper addresses the difficulty of estimating spatially and temporally detailed bus greenhouse-gas emissions when conventional fuel-use inventories provide aggregate totals. It proposes using bus GPS trajectories to estimate operating activity and emissions.
 
 ### Method
-Combines Multiple Linear Regression (MLR) with Importance-Performance Analysis (IPA) to derive implicit attribute importance (regression weights linking specific service attributes to overall user satisfaction) rather than relying on biased self-reported importance scores. Attributes are mapped onto a four-quadrant matrix (Concentrate Here / Major Weaknesses, Keep Up the Good Work, Low Priority, Possible Overkill) to prioritize high-impact interventions.
+The method reconstructs distances from successive GPS records using a sinuosity adjustment, estimates average speed from GPS points, applies a speed–fuel-consumption relation, and derives emissions. The study applies its method to one year of bus GPS data in Rio de Janeiro and compares estimates with top-down fuel-consumption estimates.
 
 ### Key Result and Its Units
-Demonstrates quantitatively (via standardized regression coefficients $\beta$ and quadrant diagnosticity metrics) that attributes with high implicit impact on user satisfaction but low current operational performance ("Concentrate Here" quadrant) act as the primary bottlenecks driving user defection. Fixing high-importance, low-performance operational gaps produces the largest marginal gain in user retention and mode preference.
+The authors report that GPS-based estimates were consistent with top-down estimates after a data-filling step, while providing finer spatial and temporal detail. This is a method demonstration; do not treat its values as BMTC emission factors.
 
 ### Limitation or Gap
-The empirical validation case study in the paper was conducted on service organizations rather than directly measuring tailpipe emissions; therefore, connecting service-quality improvements to $\text{CO}_2$ reductions requires pairing behavioral modal-shift elasticities with physical emission models.
+The method depends on GPS completeness, filling/interpolation, assumptions in the speed–consumption function, and available vehicle/emission parameters. Its Rio de Janeiro fleet and operating context do not validate Bengaluru factors. It does not estimate passenger response, modal shift, or the causal emissions effect of better ETA information.
 
 ### What carbonOrbit Can Use From It
-Provides the analytical rationale for why carbonOrbit targets schedule reliability, accurate ETA prediction, and bus-bunching mitigation: in urban bus systems, waiting-time unpredictability is a classic "high-importance, low-performance" weakness that drives commuters to private two-wheelers and cars. Supports structuring our evaluation metrics around commuter-facing reliability gains alongside environmental metrics.
+Provides a candidate activity-data workflow for estimating bus emissions from GPS-derived distance and speed. carbonOrbit may reuse the general structure only after obtaining suitable vehicle-specific fuel/emission parameters; synthetic GPS alone cannot establish real BMTC emissions or passenger diversion.
 
 ### Potential Examiner Question
 
-> Why is a service-attribute prioritization paper like Wills et al. (2019) included in an Environmental Science project on bus emissions?
+> Can carbonOrbit use this paper to claim that accurate ETA information reduces emissions?
 
-**Answer angle:** Emissions only drop if commuters actually choose buses over private vehicles. Wills et al. provide the quantitative framework showing that fixing high-importance, low-performance bottlenecks—specifically arrival time unpredictability and bunching—is the decisive lever for retaining riders and inducing modal shift.
+**Answer angle:** No. The paper estimates bus emissions from GPS-derived activity. It does not study ETA information or passenger mode choice. carbonOrbit must keep emissions scenarios separate and state any diversion as an assumption.
 
 ## Summary Matrix for carbonOrbit Pipeline Integration
 
@@ -151,4 +151,4 @@ Provides the analytical rationale for why carbonOrbit targets schedule reliabili
 | ITF (2023) | g CO2e / pkm & tCO2e / bus lifetime | Proves buses beat private cars/2Ws by 24–79% on a full life-cycle basis; underscores why high bus occupancy matters. |
 | CSTEP (2017) | Mt CO2e scenario deltas | Shows modal shift to buses cuts near-term CO2 faster than EV-only transitions under India's current power grid. |
 | TERI (2023) | g CO2 / pkm (~32.4 g/km saved vs car) | Blueprint for calculating and displaying real-time per-passenger CO2 avoidance to commuters. |
-| Wills et al. (2019) | Implicit Importance (β) vs. Performance | Justifies targeting arrival reliability and bus bunching as the highest-leverage bottlenecks to drive modal shift. |
+| Wills et al. (2019) | GPS-derived activity and estimated GHG emissions | Provides a method reference for trajectory-based bus-emissions estimation; it is not evidence of ETA-driven modal shift. |

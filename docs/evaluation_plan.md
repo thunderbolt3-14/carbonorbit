@@ -65,12 +65,12 @@ Report uncertainty using day-level or trip-level resampling that respects cluste
 
 Keep detection separate from control. No holding, stop-skipping, or dispatch action is evaluated in this project unless the scope is formally changed.
 
-- **Delay event candidate:** a bus is delayed when its simulator actual arrival exceeds the simulated schedule/target by a threshold frozen with the simulator config. The current draft does not yet define the numeric threshold; agree it before label generation.
-- **Bunching event candidate:** compare consecutive buses on the same route and direction at a common stop or route position. Use a headway-based rule relative to the route’s scheduled headway, with the numeric cut-off frozen before evaluation. Do not label bunching using a universal threshold without support; report sensitivity to alternative cut-offs.
-- Define an event’s start, end, route, bus pair (for bunching), minimum/maximum severity, and matching tolerance. The detection output may not use simulator-only label fields.
+- **Proposed delay rule:** a bus is delayed when its simulated actual arrival is at least 5 minutes later than its simulated target arrival. This is a project operating definition, not a universal literature threshold. Generate sensitivity labels at 3 and 10 minutes as well.
+- **Proposed bunching rule:** compare consecutive buses in the same route and direction at a common stop. Label bunching when the observed headway is no more than 50% of the scheduled headway. This is a project operating definition; repeat sensitivity at 33% and 75%. Exclude pairs without a valid positive scheduled headway.
+- Define each event’s start, end, route, bus pair (for bunching), minimum/maximum severity, and alert-matching tolerance in the simulator configuration. Proposed matching tolerance: one ping interval (30 seconds) on either side of event onset; revise if the ping interval changes. The detector may not use simulator-only label fields.
 - Match predicted and true events once using a declared temporal tolerance; avoid counting repeated alerts for one event as multiple true positives.
 
-Report event-level precision, recall, and F1, plus false alerts per route-hour and detection delay. Provide confusion counts and results by normal, delay, bunching, noise, and dropout scenario. Include a threshold-sensitivity table. Final numeric thresholds are a **blocking protocol decision** until the team and guide review them.
+Report event-level precision, recall, and F1, plus false alerts per route-hour and detection delay. Provide confusion counts and results by normal, delay, bunching, noise, and dropout scenario. Include the declared threshold-sensitivity table. The numeric rules above are **proposed defaults for review**, not approved or frozen; the team and guide must accept or replace them before label generation.
 
 ## 7. Robustness and realism checks
 
