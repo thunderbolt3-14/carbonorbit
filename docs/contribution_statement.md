@@ -4,9 +4,9 @@
 
 ## Proposed contribution
 
-carbonOrbit proposes a reproducible, route-based evaluation workflow that connects four pieces often evaluated separately in a student project: (1) ETA model comparison, (2) labelled delay and bunching detection, (3) an interactive presentation of predictions and alerts, and (4) an explicitly bounded environmental scenario analysis. The workflow will use selected BMTC route geometry and schedules with synthetic GPS trajectories and simulator ground truth.
+carbonOrbit proposes a reproducible evaluation workflow for selected BMTC route geometry and schedules, using synthetic GPS trajectories and simulator ground truth to compare ETA models and evaluate delay and bunching detection, with a separate, explicitly bounded environmental scenario analysis. Prior work has already connected bus-delay prediction with per-trip CO2 estimation (Amogha et al., 2026), and other work combines ETA prediction with bunching control (Rawat et al., 2026). The project must therefore not claim that integration of prediction, reliability, or emissions is itself new.
 
-The intended project contribution is an applied integration and evaluation for a Bengaluru route context, not a new ETA algorithm and not the first system to combine ETA prediction with bus-bunching work. Rawat et al. already combine ETA estimation and bunching prevention in a New York City data and multi-agent simulation setting. carbonOrbit differs in its planned BMTC route context, detection-focused reliability scope, reproducibility, and separate scenario-based emissions layer.
+The intended contribution is a bounded, reproducible BMTC-route simulation and evaluation: event detection is scored against known synthetic labels, and emissions are reported as scenarios with assumptions separated from ETA and delay metrics. This is not a new ETA algorithm, a field validation, or the first system to link prediction and reliability or emissions. Rawat et al. combine ETA and bunching prevention in an NYC data and multi-agent simulation setting; Amogha et al. combine bus-delay prediction with per-trip CO2 estimation on real Indian bus data. carbonOrbit’s proposed difference is its explicit synthetic BMTC-route benchmark, event-level detection evaluation, and transparent separation of results from conditional emissions scenarios.
 
 ## What the project can establish
 
