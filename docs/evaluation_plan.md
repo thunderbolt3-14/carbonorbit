@@ -1,106 +1,196 @@
-# Evaluation Plan — carbonOrbit
+# carbonOrbit Evaluation Plan
 
-**Phase:** 1 proposed protocol for team and guide review
-**Status:** Not frozen. Freeze only after source/route audit and team/guide review.
-**Purpose:** Pre-specify evaluation so model selection and claims are not changed after seeing test results.
+**Status:** Phase 2 draft for team review  
+**Prepared by:** Rahul Velpuri (Person D)  
+**Project:** carbonOrbit — GPS-enabled public transit monitoring and emissions scenarios
 
-## 1. Evaluation questions
+> This document records the proposed evaluation method before model development. The team should agree on the data schema, split, metrics, thresholds, and model-selection rule, then freeze and version this plan before using test results to select or tune models. Any later change should be dated and justified here.
 
-1. How accurately do candidate methods predict bus arrival time at downstream stops on held-out simulated days?
-2. How reliably do the declared delay and bunching rules identify injected simulator events under normal, noisy, and dropout conditions?
-3. How do scenario emissions estimates change under plausible combinations of trip diversion, occupancy, bus service, and emission factors?
+## 1. Evaluation goals
 
-These are separate questions and need separate outputs. A high ETA score does not demonstrate improved service, ridership, mode shift, or emissions.
+The evaluation will answer four questions:
 
-## 2. Data and experimental unit
+1. How accurately can the system estimate bus arrival time on held-out simulated service days?
+2. Do candidate ETA models improve on simple, reproducible baselines?
+3. How reliably can delay and bus-bunching events be detected when the simulator supplies ground-truth labels?
+4. How do estimated greenhouse-gas and particulate emissions change under explicitly stated passenger-shift and occupancy scenarios?
 
-- Use one documented GTFS snapshot and three routes selected by the rule in `docs/data_sources.md`. Record the snapshot, licence, service dates, validation, route IDs, and route geometry availability before generating results.
-- Generate synthetic vehicle pings and event labels with a fixed, recorded seed. The simulator plan currently proposes 30-second pings and a 28-day period; confirm feasibility and freeze those values before the full run.
-- Primary ETA target: minutes from prediction timestamp to the next scheduled GTFS stop actually reached in the simulator. If the team retains multi-stop horizons, report each horizon separately and do not pool them with next-stop scores.
-- Primary unit for ETA metrics: one bus-at-stop prediction instance. Also report breakdowns by route, horizon, hour band, and scenario. Do not treat correlated pings from one trip as independent replicates in significance tests.
-- Keep ground-truth labels and future trajectory fields out of model features. Fit preprocessing and feature transformations on training data only.
+The GPS trajectories are simulated on selected BMTC routes. Results therefore validate the pipeline against the simulator and its assumptions; they are not measurements of BMTC operations or proof of real-world emissions reductions.
 
-## 3. Chronological split (proposal)
+## 2. Data and prediction target
 
-If a 28-day run is approved, use contiguous whole-day blocks:
+### ETA target
 
-| Partition | Days | Use |
+For each prediction row, estimate the number of minutes remaining until the bus reaches a specified downstream stop. The target is:
+
+`eta_minutes = actual_stop_arrival_time - prediction_timestamp`
+
+Only rows with a valid downstream stop arrival and a positive prediction horizon should be included. The project must define one prediction point consistently (for example, a bus ping at a configured distance or time before the target stop) and document it in the data dictionary.
+
+### Required data fields
+
+The final field names must match the simulator/API data contract. At minimum, the analytical table needs:
+
+- service date and timestamp, bus ID, route ID, and trip ID;
+- current and target stop IDs, direction, and route position;
+- latitude/longitude or derived distance to target stop;
+- speed and recent segment/travel-time history, where available;
+- hour/day or service period, if used by a model;
+- actual stop-arrival timestamp or derived ETA target;
+- schedule arrival time, if delay is evaluated;
+- simulator ground-truth bunching and delay labels, plus the rule used to create them.
+
+Document units, missing-value handling, and label-generation rules in the data dictionary. Identifiers should not accidentally encode the target or split membership.
+
+## 3. Data splitting and leakage control
+
+### Proposed temporal split
+
+For the planned 28-day simulation, use chronological service-day blocks:
+
+| Set | Proposed days | Use |
 |---|---:|---|
-| Train | 1–18 | Fit models and training-only transforms |
-| Validation | 19–23 | Hyperparameter tuning and model/threshold decisions |
-| Test | 24–28 | One final report after choices are frozen |
+| Training | First 18 days | Fit model parameters and preprocessing |
+| Validation | Next 5 days | Select features, tune parameters, and choose among candidates |
+| Test | Final 5 days | One final, held-out comparison after choices are frozen |
 
-Do not randomly split pings or trips across partitions. Keep complete trips and all rows from a given service day in only one partition. If generation yields fewer days, revise this split and freeze the revision before model comparison. The test block must not be used for tuning, route selection, threshold selection, or feature changes.
+The exact dates, simulator seed, route coverage, and row counts must be recorded when the dataset is generated. Do not randomly split individual pings: nearby observations from the same trip can otherwise appear in both training and test sets and inflate performance. If the final dataset is not 28 days, preserve chronological separation and agree on replacement day counts before modeling.
 
-## 4. ETA model ladder
+### Leakage safeguards
 
-Run all candidates against the same target, eligible prediction instances, features available at prediction time, and temporal partitions. Keep a model only if it trains and predicts reproducibly in the project environment.
+- Fit imputers, scalers, encoders, and feature selection on training data only; apply the fitted transformations to validation and test data.
+- Build every feature from information available at the prediction timestamp. Do not use actual future arrival time, future pings, realized segment duration after prediction, or simulator-only future state as model inputs.
+- Keep all rows from a service day in the same split. Where trip IDs span service dates, keep the full trip together.
+- Tune and select models using training and validation only. Use the test set once for the final reported comparison.
+- Add automated checks in `tests/test_leakage.py` for future-derived columns, split overlap, and preprocessing fitted outside the training set.
+- Preserve a simple data-generation seed and configuration so the evaluation dataset can be regenerated.
 
-| ID | Candidate | Purpose |
+## 4. ETA models and baselines
+
+The following ladder is proposed; the team may trim it if time or data volume is limited:
+
+| ID | Model | Role |
 |---|---|---|
-| B0 | Route/stop/time-bin historical mean from training data | Simple historical baseline |
-| B1 | Recent moving average or last-observed running-time estimate | Lightweight online baseline |
-| M1 | Regularized linear regression using only prediction-time features | Interpretable statistical model |
-| M2 | Gradient-boosted trees using prediction-time route, time, and observed-trip features | Nonlinear tabular model |
-| M3 (optional) | LSTM/GRU sequence model | Include only if the training set, compute budget, and implementation support a fair comparison |
+| B0 | Historical mean ETA by route/stop or segment, computed from training data | Minimum benchmark |
+| B1 | Moving-average link travel-time method | Simple operational baseline, inspired by the project literature |
+| L1 | Ridge regression | Linear feature baseline |
+| T1 | Random forest regression | Nonlinear tree comparator |
+| M1 | Gradient-boosting regression | Main candidate model |
+| M2 | Quantile gradient boosting, if supported | Prediction-interval candidate |
+| Optional | XGBoost or a small MLP | Include only if dependencies, time, and data support a fair comparison |
 
-Do not assume the more complex model wins. Final model selection is based on validation results using the rule below; report test results once for the selected model and all pre-specified baselines.
+All models must use the same target rows, chronological split, and primary metrics. Compare against B0 and B1, not just against one another. Record feature sets, package versions, parameters, and random seeds.
 
-## 5. ETA metrics and selection rule
+## 5. ETA metrics and reporting
 
-Report in minutes, overall and by route/horizon/scenario:
+Report all errors in minutes on validation and final test data:
 
-- MAE as the primary accuracy metric.
-- RMSE to reveal sensitivity to large errors.
-- Median absolute error and 90th-percentile absolute error to describe typical and tail performance.
-- Percentage of predictions within ±2 minutes, labelled as a project reporting threshold rather than a universal standard.
-- Runtime per prediction and training runtime for practical comparison.
-- If prediction intervals are implemented: empirical coverage and mean interval width at the stated nominal level. Do not report coverage without interval width.
+- **MAE (primary):** mean absolute error; easy to interpret as average ETA error.
+- **RMSE:** penalizes larger misses more strongly.
+- **Median absolute error and 90th/95th percentile absolute error:** describe typical and tail errors.
+- **Within ±2 minutes:** share of predictions whose absolute error is at most two minutes.
+- **Relative MAE improvement over B0:** `100 × (MAE_B0 − MAE_model) / MAE_B0`.
+- If prediction intervals are implemented: empirical coverage and average interval width, with the nominal coverage stated.
 
-**Proposed selection rule:** choose the lowest-validation-MAE model among candidates whose validation RMSE is no more than 5% worse than the best validation RMSE; among eligible models, choose the simplest/fastest model. Freeze and document the exact simplicity ranking and rule before the test run. If the team chooses a different tolerance, record and justify it before viewing test results.
+Provide an overall result and breakdowns by route, service period/hour, and prediction horizon where sample sizes permit. Include test sample counts. Do not hide poor segments behind a single aggregate score.
 
-Report uncertainty using day-level or trip-level resampling that respects clustering; do not bootstrap individual pings as if independent. Any test must be pre-specified and interpreted as simulator-specific evidence.
+## 6. Proposed hypotheses and decision rules
 
-## 6. Delay and bunching detection
+These thresholds are **draft proposals**, not results or commitments, and require team approval before the evaluation is frozen.
 
-Keep detection separate from control. No holding, stop-skipping, or dispatch action is evaluated in this project unless the scope is formally changed.
+- **H1 — Baseline value:** M1 reduces test MAE by at least 15% versus B0.
+- **H2 — Added nonlinear value:** M1 reduces test MAE by at least 5% versus L1.
+- **H3 — Interval calibration (only if M2 is used):** an 80% interval has observed test coverage between 75% and 85%; interval width is reported alongside coverage.
+- **H4 — Event detection:** the selected delay/bunching detector reaches test F1 of at least 0.90 against simulator labels. Report precision and recall as well, since F1 alone can conceal missed events or false alarms.
+- **H5 — Robustness:** report how ETA error and detection scores change under the agreed polling and GPS-dropout variants; no performance threshold is assumed until the team reviews simulator feasibility.
 
-- **Proposed delay rule:** a bus is delayed when its simulated actual arrival is at least 5 minutes later than its simulated target arrival. This is a project operating definition, not a universal literature threshold. Generate sensitivity labels at 3 and 10 minutes as well.
-- **Proposed bunching rule:** compare consecutive buses in the same route and direction at a common stop. Label bunching when the observed headway is no more than 50% of the scheduled headway. This is a project operating definition; repeat sensitivity at 33% and 75%. Exclude pairs without a valid positive scheduled headway.
-- Define each event’s start, end, route, bus pair (for bunching), minimum/maximum severity, and alert-matching tolerance in the simulator configuration. Proposed matching tolerance: one ping interval (30 seconds) on either side of event onset; revise if the ping interval changes. The detector may not use simulator-only label fields.
-- Match predicted and true events once using a declared temporal tolerance; avoid counting repeated alerts for one event as multiple true positives.
+### Model selection
 
-Report event-level precision, recall, and F1, plus false alerts per route-hour and detection delay. Provide confusion counts and results by normal, delay, bunching, noise, and dropout scenario. Include the declared threshold-sensitivity table. The numeric rules above are **proposed defaults for review**, not approved or frozen; the team and guide must accept or replace them before label generation.
+1. Use validation data for all tuning and candidate selection.
+2. Select the candidate with the lowest validation MAE, subject to meeting the project’s agreed reliability and data-quality checks.
+3. Apply the proposed parsimony rule: if M1 improves validation MAE over L1 by less than 5%, prefer L1, provided its other agreed checks are acceptable. The team must confirm this rule before freezing the plan.
+4. After the model and parameters are selected, evaluate that choice once on the test set and report the result. Do not return to test results to retune.
+5. Report all planned candidate results, including models that do not improve on the baselines.
 
-## 7. Robustness and realism checks
+If the team wishes to use statistical comparisons, specify the test and comparison unit before looking at test outcomes. A possible approach is paired absolute errors by service day, with a bootstrap confidence interval over days; avoid treating correlated pings as independent samples. Statistical significance should supplement, not replace, effect size and error summaries.
 
-Before interpreting model scores, report simulator summaries against the intended configuration: route adherence, speed and dwell distributions, headway distributions, delay/bunching counts, GPS noise, missing-ping rate, and output completeness. Repeat evaluation for planned noise/dropout variants with the same frozen model choices. Report performance by route and scenario so aggregate results cannot hide failures.
+## 7. Delay and bus-bunching evaluation
 
-## 8. Emissions scenario method
+The simulator/data owner must define ground-truth event rules before detection thresholds are tuned. Record schedule assumptions, headway definitions, and the exact event window.
 
-The emissions module estimates changes under explicit assumptions; it does not infer passenger response from ETA accuracy.
+- **Delay:** compare simulated actual arrival with scheduled arrival. Report delay error for any delay estimator and precision, recall, and F1 for a delay alert at the team-agreed threshold.
+- **Bunching:** derive headway between consecutive buses serving the same route and direction. Define bunching using a documented threshold relative to scheduled or target headway; freeze that threshold before evaluation.
+- Report confusion counts, precision, recall, F1, and the number of positive/negative events. Include threshold-sensitivity results on validation data; select the operating threshold before final test scoring.
+- Score events at the event/trip level where possible, rather than counting every adjacent ping as a separate event.
 
-For pollutant *p*, define the comparison and system boundary first. A simple operational scenario can be expressed as:
+The proposed F1 target in H4 is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
 
-`net change_p = emissions from additional bus service_p − emissions avoided by displaced private-vehicle travel_p`
+## 8. Emissions scenario method (Rahul Velpuri)
 
-Specify bus fuel/technology, distance, service added or unchanged, occupancy, passenger-kilometres diverted, private mode mix, private-vehicle occupancy, and pollutant-specific factors. Show a baseline and sensitivity ranges, plus break-even occupancy/diversion where possible. Keep a fixed-service case distinct from a marginal-extra-service case. Do not combine lifecycle factors with tailpipe-only factors.
+The emissions component is a scenario calculator, not an observed impact measurement. Keep the ETA-model evaluation separate from the emissions calculation: better information may support a modal-shift scenario, but the project does not directly measure that travelers changed modes.
 
-Report CO2/CO2e and particulate emissions only when supported by a defined factor and boundary. Particulate exhaust emissions are not ambient PM2.5 concentration; no air-quality concentration claim is planned. Any mode-shift percentage must be labelled an assumed scenario, not an observed effect of real-time information.
+### Proposed calculation
 
-## 9. Reproducibility and reporting
+For a stated number of diverted passenger trips and trip distance:
 
-Archive or identify the GTFS snapshot, licence, simulator version, random seed, configuration, feature list, partition dates, model parameters, event thresholds, and output checksums. Keep raw/source data out of Git unless the licence and repository policy permit it. Report exclusions and failed runs. Use the same test dataset across all final comparisons.
+`net CO2e change = (diverted private-mode passenger-km × private-mode factor) − (incremental bus passenger-km × bus factor)`
 
-## 10. Freeze checklist
+If the chosen emission factors are already expressed per passenger-km, multiply each factor by passenger-km. If factors are per vehicle-km, convert using explicit vehicle occupancy and vehicle-km assumptions before comparing. Do not mix per-vehicle and per-passenger factors.
 
-Before tagging a frozen plan, all four members and the guide should review and agree on:
+For a **marginal-capacity scenario**, state whether an added bus trip is assumed; if no additional bus service is assumed, explain that only incremental service emissions are omitted under that scenario. For an **average-occupancy scenario**, allocate bus emissions per passenger using the stated average occupancy. Keep these scenarios distinct and explain what each represents.
 
-- GTFS source, licence, route IDs, and audit record.
-- Simulation duration, ping interval, seed policy, and output schema.
-- ETA target, available features, model ladder, split dates, primary metric, and selection rule.
-- Delay/bunching definitions, numeric thresholds, and event-matching tolerance.
-- Emissions boundary, factors, occupancy/diversion ranges, and sensitivity design.
-- Reporting limitations and reproducibility artifacts.
+### Scenario inputs and outputs
 
-Record approvals and any changes in the diary. Until then this file is a proposal, not a frozen protocol.
+Vary and document at least:
+
+- private mode (for example, two-wheeler, car, or taxi) and corresponding source-supported factor;
+- trip distance and number of diverted trips/passengers;
+- bus emission factor and occupancy or load assumption;
+- diversion share / ridership uplift, clearly labeled as an assumed scenario;
+- pollutant and unit (for example, kg CO2e per day or per scenario period; PM only when a defensible factor and consistent boundary are available).
+
+Present a sensitivity grid including low, central, and high assumptions. Show the inputs, source, unit, calculation, and resulting estimate. Include a break-even occupancy or other threshold analysis if the required factors and assumptions support it. Do not claim PM2.5 or CO2 reductions from an ETA score alone.
+
+### Source and boundary requirements
+
+For each factor, cite the original/authoritative source and record the vehicle type, fuel, geography, year, system boundary (tailpipe or lifecycle), and unit. Prefer like-for-like boundaries. If the chosen sources differ in boundary or context, disclose the mismatch and avoid presenting the figures as directly comparable. The emissions references assigned to Rahul Velpuri (Ramachandra & Shwetmala, ITF, CSTEP, TERI, and Wills et al.) should be checked against their full texts before numerical factors are entered.
+
+## 9. Reproducibility and artifacts
+
+The final evaluation should preserve:
+
+- simulator configuration, seed, dataset version, and data dictionary;
+- this frozen plan and any dated amendments;
+- feature definitions and leakage checks;
+- model parameters, software versions, and run commands;
+- scripts/notebooks that regenerate result tables and figures;
+- emissions-factor source notes and scenario input tables;
+- final metrics with split dates and sample/event counts.
+
+Generated data and figures should follow the repository’s data policy. Do not commit secrets, virtual environments, or restricted source datasets. Use small reproducible examples or documented generation steps where appropriate.
+
+## 10. Phase 2 decisions for team review
+
+Before modeling begins, the team should record agreement on:
+
+1. Whether the project uses 28 simulated days and the proposed 18/5/5 chronological split.
+2. The ETA prediction point, target, horizon, and minimum valid sample rules.
+3. The baseline/model ladder and which optional models are in scope.
+4. The primary/secondary metrics, H1–H5 thresholds, and parsimony rule.
+5. Delay and bunching ground-truth definitions and event-level scoring method.
+6. Emissions boundary, factors, occupancy/diversion scenarios, and supported pollutants.
+7. Dataset schema, seed/version, artifact locations, and the process for freezing this plan.
+
+After review, update the status at the top to **Team reviewed and frozen**, add reviewer names/date, and tag the agreed version (the master plan proposed `eval-plan-v1`).
+
+## References to verify for the emissions section
+
+Use the project’s verified bibliography and confirm full citation details and numerical assumptions against the source text before final submission:
+
+- T. V. Ramachandra and Shwetmala, “Emissions from India's transport sector: Statewise synthesis,” *Atmospheric Environment*, 2009. DOI: [10.1016/j.atmosenv.2009.07.015](https://doi.org/10.1016/j.atmosenv.2009.07.015).
+- International Transport Forum, India transport life-cycle assessment report, 2023. DOI: [10.1787/2d11e416-en](https://doi.org/10.1787/2d11e416-en).
+- CSTEP, *Decarbonisation Impact on Road Transport Sector Emissions*, 2017. [Report PDF](https://shaktifoundation.in/wp-content/uploads/2022/04/CSTEP-2017-Decarbonisation-impact-on-Road-Transport-Sector-Emissions-1.pdf).
+- TERI, *Per Passenger Emission in Delhi: Different Modes*. [Report PDF](https://teriin.org/sites/default/transport/Per_passenger_emission_in_Delhi_Different_Modes.pdf).
+- Wills et al. (2019), arXiv:1907.09335. [Paper record](https://arxiv.org/abs/1907.09335v1).
+
+These references are starting points from the project notes; verify titles, authors, dates, units, and methods from the full source before using them to support a numerical result.
