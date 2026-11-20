@@ -19,6 +19,10 @@ The GPS trajectories are simulated on selected BMTC routes. Results therefore va
 
 ## 2. Data and prediction target
 
+### Route and schedule input
+
+The current candidate is the pinned Vonter BMTC GTFS snapshot and the three routes audited in [`docs/data_sources.md`](data_sources.md): `BMTC:dd9ea3794c96` (285-M KBS-BMSIT), `BMTC:6f4d45186ddd` (285 BMSITY-YHKOT), and `BMTC:b202977c0fc0` (406). The snapshot revision, service dates, checksum, project-level consistency checks, and source caveats are recorded there. The feed is an unofficial geometry/schedule source, not live vehicle data; generated trajectories, operations, and event labels remain synthetic. Confirm the team's use of this fallback before freezing the protocol.
+
 ### ETA target
 
 For each prediction row, estimate the number of minutes remaining until the bus reaches a specified downstream stop. The target is:
@@ -118,12 +122,13 @@ If the team wishes to use statistical comparisons, specify the test and comparis
 
 The simulator/data owner must define ground-truth event rules before detection thresholds are tuned. Record schedule assumptions, headway definitions, and the exact event window.
 
-- **Delay:** compare simulated actual arrival with scheduled arrival. Report delay error for any delay estimator and precision, recall, and F1 for a delay alert at the team-agreed threshold.
-- **Bunching:** derive headway between consecutive buses serving the same route and direction. Define bunching using a documented threshold relative to scheduled or target headway; freeze that threshold before evaluation.
+- **Proposed delay rule:** label an event when simulated actual arrival is at least 5 minutes later than its target arrival. Repeat sensitivity analysis at 3 and 10 minutes. These are project defaults for review, not universal standards.
+- **Proposed bunching rule:** compare consecutive buses in the same route and direction at a common stop; label bunching when observed headway is no more than 50% of the scheduled/target headway. Repeat sensitivity at 33% and 75%; exclude pairs without a valid positive reference headway. These are project defaults for review, not universal standards.
+- Report delay error for any delay estimator and event-level precision, recall, and F1 for alerts. Define the event window and matching tolerance before scoring; if the proposed ping interval remains 30 seconds, one ping interval on either side of event onset is a candidate tolerance.
 - Report confusion counts, precision, recall, F1, and the number of positive/negative events. Include threshold-sensitivity results on validation data; select the operating threshold before final test scoring.
 - Score events at the event/trip level where possible, rather than counting every adjacent ping as a separate event.
 
-The proposed F1 target in H4 is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
+The proposed numeric event rules and H4 F1 target require team review before freeze. The F1 target is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
 
 ## 8. Emissions scenario method (Rahul Velpuri)
 

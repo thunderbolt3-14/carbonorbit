@@ -35,9 +35,9 @@ assumption-based estimates, not measured effects.
 - tests/ and scripts/ : automated tests and run scripts
 
 ## Status
-Phase 1: the consolidated literature survey, base-paper analysis, problem
-statement, objectives, contribution statement, and proposed evaluation plan are
-in the repository. Source corrections identified during review have been
-incorporated. The dated GTFS snapshot and three-route audit, remaining full-text
-checks for access-limited papers, and team/guide review of the proposed protocol
-remain open before implementation and protocol freeze.
+Phase 0 is complete. Phase 1's shared research documents are merged, and the
+Phase 2 data audit has pinned a community GTFS snapshot and selected three
+routes. The evaluation plan and simulator plan are still drafts: simulation
+settings, data/API contracts, event thresholds, emissions inputs, and team/guide
+review must be settled before implementation and protocol freeze. See
+`docs/phase_roadmap.md` for the ordered remaining work.

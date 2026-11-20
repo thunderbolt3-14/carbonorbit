@@ -53,7 +53,7 @@ Missing pings cannot themselves appear as rows; represent them in a separate eve
 
 ## Decisions still needed from the team
 
-- Confirm the DULT feed access/licence, or formally adopt a dated Vonter GTFS snapshot.
-- Confirm the three route IDs after inspecting stops near BMSIT.
-- Confirm bus count, simulation duration, and whether the 28-day target is practical for the first delivery.
-- Agree the ping and event file formats with the API and analytics owners before implementation.
+- Decide whether to continue with the documented Vonter snapshot as the project geometry source. DULT was inaccessible on the audit date; the Vonter data is unofficial and its schedules must not be treated as observed service truth.
+- Confirm bus count, simulation duration, ping interval, speed/dwell profiles, noise/dropout scenarios, and whether 28 days is practical.
+- Agree the ping, trip, ground-truth event, and quality-log schemas with the API and analytics work before implementation.
+- Approve the event-generation rules and keep simulator-only labels out of model features.
