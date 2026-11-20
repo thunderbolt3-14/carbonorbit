@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>carbonOrbit | Simulated Transit Monitor</title>
+  <style>
+    :root { color-scheme: light; --ink:#172536; --muted:#64748b; --line:#d9e2ec; --panel:#fff; --bg:#f2f6fa; --teal:#087f8c; --amber:#b45309; --red:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.45 Segoe UI,system-ui,sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:#102a43; color:#fff; padding:18px clamp(16px,4vw,48px); display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    h1 { margin:0; font-size:21px; } header small { color:#cbd5e1; }
+    .badge { background:#ffe8b3; color:#713f12; padding:6px 10px; border-radius:20px; font-size:12px; font-weight:700; white-space:nowrap; }
+    main { max-width:1440px; margin:0 auto; padding:20px clamp(12px,3vw,36px) 40px; }
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:end; margin-bottom:16px; }
+    label { font-size:12px; color:var(--muted); display:grid; gap:4px; }
+    select,button { font:inherit; border:1px solid var(--line); border-radius:8px; padding:8px 12px; background:white; color:var(--ink); }
+    button { cursor:pointer; background:var(--teal); color:white; border-color:var(--teal); font-weight:650; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(290px,1fr); gap:16px; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 1px 2px #102a4310; min-width:0; }
+    h2 { margin:0 0 12px; font-size:16px; } .sub { color:var(--muted); font-size:12px; margin:-6px 0 12px; }
+    .map { width:100%; height:360px; background:linear-gradient(150deg,#f4fbfc,#eef4f8); border-radius:8px; }
+    .bus-dot { fill:var(--teal); stroke:white; stroke-width:3; } .empty { color:var(--muted); padding:28px 8px; text-align:center; }
+    .kpis { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .kpi { border:1px solid var(--line); border-radius:9px; padding:12px; } .kpi b { display:block; font-size:22px; margin-top:4px; } .kpi span { font-size:12px; color:var(--muted); }
+    .table-wrap { overflow:auto; } table { width:100%; border-collapse:collapse; font-size:13px; } th,td { padding:9px 8px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap; } th { color:var(--muted); font-weight:650; }
+    .tag { font-size:11px; font-weight:700; border-radius:12px; padding:3px 8px; background:#fff2cc; color:var(--amber); } .tag.bunching { background:#fee4e2; color:var(--red); }
+    .wide { grid-column:1/-1; } .foot { color:var(--muted); font-size:12px; margin-top:14px; } #status { margin-left:auto; color:var(--muted); font-size:12px; }
+    @media(max-width:850px) { .grid { grid-template-columns:1fr; } .wide { grid-column:auto; } .map { height:280px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>carbonOrbit</h1><small>Bus tracking, ETA and service reliability</small></div>
+    <span class="badge">SIMULATED DATA · NOT LIVE BMTC</span>
+  </header>
+  <main>
+    <div class="controls">
+      <label>Route<select id="route"><option value="">All routes</option></select></label>
+      <button id="refresh">Refresh now</button>
+      <span id="status">Connecting…</span>
+    </div>
+    <div class="grid">
+      <section class="panel">
+        <h2>Simulated route positions</h2><p class="sub">Positions show the latest stored ping for each bus in the selected run.</p>
+        <svg id="map" class="map" viewBox="0 0 1000 500" role="img" aria-label="Diagram of simulated bus positions"></svg>
+      </section>
+      <section class="panel">
+        <h2>Run summary</h2><p class="sub" id="run-id">No run loaded</p>
+        <div class="kpis">
+          <div class="kpi"><span>Simulated buses</span><b id="bus-count">—</b></div>
+          <div class="kpi"><span>Current alerts</span><b id="alert-count">—</b></div>
+          <div class="kpi"><span>ETA MAE (test)</span><b id="eta-mae">—</b></div>
+          <div class="kpi"><span>Selected model</span><b id="model-name" style="font-size:15px">—</b></div>
+        </div>
+        <p class="foot">Evaluation metrics are simulator-specific. They do not establish live BMTC accuracy.</p>
+      </section>
+      <section class="panel wide">
+        <h2>Alerts</h2><div class="table-wrap"><table><thead><tr><th>Time</th><th>Route</th><th>Type</th><th>Bus</th><th>Stop</th><th>Severity</th><th>Details</th></tr></thead><tbody id="alerts"><tr><td colspan="7" class="empty">No alerts loaded.</td></tr></tbody></table></div>
+      </section>
+      <section class="panel wide">
+        <h2>Latest ETA predictions</h2><div class="table-wrap"><table><thead><tr><th>Time</th><th>Route</th><th>Bus</th><th>Next stop</th><th>ETA</th><th>Model</th></tr></thead><tbody id="etas"><tr><td colspan="6" class="empty">No predictions loaded.</td></tr></tbody></table></div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const $ = function(id) { return document.getElementById(id); };
+    const get = async function(url) { const r=await fetch(url); if(!r.ok) throw new Error("API " + r.status); return r.json(); };
+    const time = function(s) { return s ? new Date(s).toLocaleString() : "—"; };
+    const escapeHtml = function(s) { return String(s ?? "").replace(/[&<>"']/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); };
+    function drawBuses(buses) {
+      const svg=$("map"); svg.replaceChildren();
+      if(!buses.length) { svg.innerHTML='<text x="500" y="250" text-anchor="middle" fill="#64748b">No simulated bus positions in this run</text>'; return; }
+      const lats=buses.map(function(x){return Number(x.lat);}), lons=buses.map(function(x){return Number(x.lon);});
+      const minLat=Math.min.apply(null,lats), maxLat=Math.max.apply(null,lats), minLon=Math.min.apply(null,lons), maxLon=Math.max.apply(null,lons);
+      const pad=55, spanLat=maxLat-minLat||0.001, spanLon=maxLon-minLon||0.001;
+      buses.forEach(function(b) {
+        const x=pad+(Number(b.lon)-minLon)/(spanLon)*(1000-2*pad), y=500-pad-(Number(b.lat)-minLat)/(spanLat)*(500-2*pad);
+        const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttribute("cx",x);circle.setAttribute("cy",y);circle.setAttribute("r",9);circle.setAttribute("class","bus-dot");
+        const title=document.createElementNS("http://www.w3.org/2000/svg","title");title.textContent=b.bus_id+" · "+b.route_id+" · "+b.next_stop_id;circle.appendChild(title);svg.appendChild(circle);
+      });
+    }
+    function refresh() {
+      $("status").textContent="Refreshing…";
+      const route=$("route").value, qs=route?"?route_id="+encodeURIComponent(route):"";
+      Promise.all([get("/api/v1/buses"),get("/api/v1/eta"),get("/api/v1/alerts"+qs),get("/api/v1/metrics")]).then(function(values) {
+        const busData=values[0], etaData=values[1], alertData=values[2], metricData=values[3];
+        const visibleBuses=route?busData.buses.filter(function(b){return b.route_id===route;}):busData.buses;
+        const visibleEtas=route?etaData.predictions.filter(function(e){return e.route_id===route;}):etaData.predictions;
+        $("run-id").textContent=busData.run_id?"Run "+busData.run_id:"No run loaded";
+        $("bus-count").textContent=visibleBuses.length; $("alert-count").textContent=alertData.alerts.length;
+        const mae=metricData.metrics && metricData.metrics.eta_mae_min ? metricData.metrics.eta_mae_min.value : null;
+        $("eta-mae").textContent=mae!==null?Number(mae).toFixed(2)+" min":"—";
+        $("model-name").textContent=visibleEtas && visibleEtas.length?visibleEtas[0].model:"—";
+        drawBuses(visibleBuses);
+        const routeIds=Array.from(new Set(busData.buses.map(function(b){return b.route_id;}))).sort(), current=$("route").value;
+        $("route").innerHTML='<option value="">All routes</option>'+routeIds.map(function(id){return '<option value="'+escapeHtml(id)+'">'+escapeHtml(id)+'</option>';}).join("");
+        $("route").value=routeIds.includes(current)?current:"";
+        $("alerts").innerHTML=alertData.alerts.length?alertData.alerts.map(function(a){
+          return "<tr><td>"+escapeHtml(time(a.timestamp_utc))+"</td><td>"+escapeHtml(a.route_id)+"</td><td><span class=\"tag "+escapeHtml(a.type)+"\">"+escapeHtml(a.type)+"</span></td><td>"+escapeHtml(a.bus_id)+"</td><td>"+escapeHtml(a.target_stop_id||"—")+"</td><td>"+Number(a.severity).toFixed(2)+"</td><td>"+escapeHtml(a.message)+"</td></tr>";
+        }).join(""):'<tr><td colspan="7" class="empty">No alerts for this route.</td></tr>';
+        $("etas").innerHTML=visibleEtas && visibleEtas.length?visibleEtas.slice(0,100).map(function(e){
+          return "<tr><td>"+escapeHtml(time(e.timestamp_utc))+"</td><td>"+escapeHtml(e.route_id)+"</td><td>"+escapeHtml(e.bus_id)+"</td><td>"+escapeHtml(e.target_stop_id)+"</td><td>"+Number(e.predicted_eta_min).toFixed(1)+" min</td><td>"+escapeHtml(e.model)+"</td></tr>";
+        }).join(""):'<tr><td colspan="6" class="empty">No ETA predictions are stored yet.</td></tr>';
+        $("status").textContent="Updated "+new Date().toLocaleTimeString();
+      }).catch(function(error){$("status").textContent="Service unavailable: "+error.message;});
+    }
+    $("refresh").addEventListener("click",refresh); $("route").addEventListener("change",refresh);
+    refresh(); setInterval(refresh,15000);
+  </script>
+</body>
+</html>

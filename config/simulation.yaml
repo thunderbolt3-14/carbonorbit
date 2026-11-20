@@ -1,0 +1,42 @@
+project:
+  name: carbonOrbit
+  simulator_version: "0.1.0"
+  timezone: "Asia/Kolkata"
+  gtfs_revision: "a4702664d65bfbb37290a5f75effaa24ead1d9dd"
+  gtfs_sha256: "812c7d472ff116024ca1e0a7ff6e28662f762ca09265da8d5c7e9f6241cf8a45"
+  gtfs_path: "data/raw/bmtc.zip"
+  route_ids:
+    - "BMTC:dd9ea3794c96"
+    - "BMTC:6f4d45186ddd"
+    - "BMTC:b202977c0fc0"
+
+simulation:
+  seed: 20261109
+  start_date: "2026-11-09"
+  days: 28
+  ping_interval_seconds: 30
+  gps_noise_std_m: 8.0
+  ping_dropout_probability: 0.03
+  delay_injection_probability: 0.12
+  delay_minutes_min: 3.0
+  delay_minutes_max: 12.0
+  travel_time_factor_min: 0.85
+  travel_time_factor_max: 1.25
+  dwell_seconds_min: 8
+  dwell_seconds_max: 40
+  event_rules:
+    delay_minutes: 5.0
+    bunching_headway_ratio: 0.50
+    delay_sensitivity_minutes: [3.0, 10.0]
+    bunching_sensitivity_ratios: [0.33, 0.75]
+
+scenarios:
+  normal:
+    gps_noise_std_m: 8.0
+    ping_dropout_probability: 0.03
+  noisy_gps:
+    gps_noise_std_m: 25.0
+    ping_dropout_probability: 0.03
+  high_dropout:
+    gps_noise_std_m: 8.0
+    ping_dropout_probability: 0.15
