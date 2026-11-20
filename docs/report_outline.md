@@ -1,4 +1,6 @@
-# Final Report Outline
+# Final Report Structure — Completed
+
+The completed report is [`report/final_report.md`](report/final_report.md). Citation provenance, access limits, and remaining metadata checks are in [`citation_audit.md`](citation_audit.md).
 
 1. **Abstract** — problem, proposed synthetic BMTC-route study, methods, and measured results only after the final evaluation.
 2. **Introduction** — Bengaluru bus information context, problem statement, research question, objectives, contribution boundaries.
@@ -11,4 +13,4 @@
 9. **Conclusion and future work** — answer only the research question supported by the synthetic evaluation.
 10. **Reproducibility appendix** — pinned data revision/checksum, configurations, commands, versions, schemas and output manifest.
 
-Do not describe synthetic GPS as live BMTC observations. Do not claim passenger diversion, service improvement, causal emissions savings, or ambient PM2.5 change without new evidence.
+Do not describe synthetic GPS as live BMTC observations. Do not claim passenger diversion, service improvement, causal emissions savings, or ambient PM2.5 change without new evidence. These limits are incorporated into the completed report.
