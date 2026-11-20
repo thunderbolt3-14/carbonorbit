@@ -111,10 +111,10 @@ These thresholds are **draft proposals**, not results or commitments, and requir
 ### Model selection
 
 1. Use validation data for all tuning and candidate selection.
-2. Select the candidate with the lowest validation MAE, subject to meeting the project’s agreed reliability and data-quality checks.
-3. Apply the proposed parsimony rule: if M1 improves validation MAE over L1 by less than 5%, prefer L1, provided its other agreed checks are acceptable. The team must confirm this rule before freezing the plan.
-4. After the model and parameters are selected, evaluate that choice once on the test set and report the result. Do not return to test results to retune.
-5. Report all planned candidate results, including models that do not improve on the baselines.
+2. Find the best validation RMSE and keep candidates whose validation RMSE is no more than 5% above it.
+3. Among those candidates, find the best validation MAE. Keep candidates whose validation MAE is within 5% of that minimum, then choose the simplest in this order: HistoricalMean, MovingSpeed, Ridge, RandomForest, GradientBoosting. This explicit parsimony rule replaces a model-specific L1/M1 comparison.
+4. After model-selection rules are fixed on validation, fit each pre-specified candidate using training plus validation data and score each once on the untouched test set. Identify the selected model, but do not use test scores to change the choice or retune.
+5. Report all pre-specified candidate test results, including models that do not improve on the baselines.
 
 If the team wishes to use statistical comparisons, specify the test and comparison unit before looking at test outcomes. A possible approach is paired absolute errors by service day, with a bootstrap confidence interval over days; avoid treating correlated pings as independent samples. Statistical significance should supplement, not replace, effect size and error summaries.
 
@@ -125,10 +125,10 @@ The simulator/data owner must define ground-truth event rules before detection t
 - **Proposed delay rule:** label an event when simulated actual arrival is at least 5 minutes later than its target arrival. Repeat sensitivity analysis at 3 and 10 minutes. These are project defaults for review, not universal standards.
 - **Proposed bunching rule:** compare consecutive buses in the same route and direction at a common stop; label bunching when observed headway is no more than 50% of the scheduled/target headway. Repeat sensitivity at 33% and 75%; exclude pairs without a valid positive reference headway. These are project defaults for review, not universal standards.
 - Report delay error for any delay estimator and event-level precision, recall, and F1 for alerts. Define the event window and matching tolerance before scoring; if the proposed ping interval remains 30 seconds, one ping interval on either side of event onset is a candidate tolerance.
-- Report confusion counts, precision, recall, F1, and the number of positive/negative events. Include threshold-sensitivity results on validation data; select the operating threshold before final test scoring.
+- Report confusion counts, precision, recall, F1, and the number of positive/negative events. Select the event threshold that maximizes validation event-level F1; break ties by choosing the value closest to the configured default, then the numerically smaller value. Freeze that threshold before scoring it on test. Report the full threshold sensitivity table separately.
 - Score events at the event/trip level where possible, rather than counting every adjacent ping as a separate event.
 
-The proposed numeric event rules and H4 F1 target require team review before freeze. The F1 target is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
+The proposed numeric event rules and H4 F1 target require team review before freeze. Report event metrics on the same held-out test service days as ETA metrics; use validation only for threshold selection. The F1 target is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
 
 ## 8. Emissions scenario method (Rahul Velpuri)
 

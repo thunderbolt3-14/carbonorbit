@@ -1,0 +1,18 @@
+# Intentionally unset. No BMTC-specific, like-for-like emission factors have
+# been established in the project sources. Add a factor only with source URL,
+# year, geography, vehicle/fuel, unit, and boundary recorded.
+boundary: null
+factors:
+  bus_g_per_pkm: null
+  private_mode_g_per_pkm: null
+  private_mode: null
+  source_url: null
+  source_year: null
+  geography: null
+  vehicle_and_fuel: null
+  unit: "g CO2e per passenger-km"
+scenarios:
+  diversion_share: [0.0, 0.05, 0.15]
+  private_vehicle_occupancy: [1.0, 1.5, 2.0]
+  bus_occupancy: [10.0, 30.0, 50.0]
+  trip_distance_km: 8.0

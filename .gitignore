@@ -226,4 +226,5 @@ venv/
 data/raw/
 data/simulated/
 results/tmp/
+results/generated/
 .vscode/
