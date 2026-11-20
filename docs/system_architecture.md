@@ -37,5 +37,6 @@ flowchart LR
 - Raw GTFS stays in ignored `data/raw/`; never commit it. The manifest records the pinned revision and archive checksum from `docs/data_sources.md`.
 - Generated files are reproducible artifacts and remain in ignored `data/simulated/` or `results/` unless a small derived artifact is explicitly approved for the repository.
 - The model feature table must not contain simulator labels, realized future arrivals, or future pings.
+- Speed and distance features use observation-time inputs: schedule-based speed with independent measurement variation, and distance from the GPS-perturbed coordinate. They do not expose the realized segment duration or hidden simulator progress.
 - API responses identify the simulation run and return empty prediction/alert lists when the matching analysis artifact is not available.
 - SQLite is a local demo store; it is not a multi-user production database.

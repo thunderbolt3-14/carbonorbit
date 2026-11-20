@@ -3,11 +3,11 @@
 Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility
 
 ## Summary
-An open, reproducible project plan for bus arrival-time prediction, delay and
-bus-bunching detection, and scenario-based environmental estimates. The proposed
-evaluation uses synthetic GPS on BMTC route geometry; no simulator results or live
-BMTC vehicle-data validation are available yet. Environmental outputs will be
-assumption-based estimates, not measured effects.
+An open, reproducible project for bus arrival-time prediction, delay and
+bus-bunching detection, and scenario-based environmental estimates. Its first
+28-day synthetic evaluation is recorded in `docs/simulation_results.md`. It does
+not validate live BMTC vehicle operations. Environmental outputs remain
+assumption-based scenarios, not measured effects.
 
 ## Team
 | Name | Role |
@@ -58,11 +58,9 @@ evaluation artifacts only; they do not connect to live BMTC vehicles.
 - tests/ and scripts/ : automated tests and run scripts
 
 ## Status
-Phase 0 and the Phase 1 research-document set are complete. Phase 2 has a pinned
-community GTFS snapshot, three audited routes, a proposed evaluation plan, and
-an initial implementation foundation for simulation, the API, analytics,
-emissions scenarios, and the dashboard. Runtime results have not been produced
-in this checkout: the archive is local-only, dependencies may need installation,
-and the protocol remains subject to team/guide review. Emissions factor values
-are intentionally unset until compatible sources are recorded. See
-`docs/phase_roadmap.md` for remaining validation and approval gates.
+Phase 0 and the Phase 1 research-document set are complete. The team-approved
+evaluation plan and system contracts are recorded in `docs/`. Initial synthetic
+results and robustness outputs are summarized in `docs/simulation_results.md`.
+The run does not establish live BMTC performance. Emissions factor values remain
+unset until compatible sources are recorded. See `docs/phase_roadmap.md` for
+remaining report and dashboard review tasks.

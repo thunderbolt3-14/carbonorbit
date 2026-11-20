@@ -235,20 +235,32 @@ def simulate(config: dict, scenario_name: str = "normal", output_root: str | Pat
                     fraction = min(0.999999, max(0.0, (sample_seconds - depart) / duration))
                     lat, lon = _at_fraction(line, cumulative, leg_distance, fraction)
                     lat, lon, noise_m = _noise(lat, lon, noise_std, trip_rng)
+                    # Speed and distance are observation-time estimates. Never
+                    # derive speed from the realized future segment duration or
+                    # distance from the simulator's hidden route fraction.
+                    scheduled_leg = max(30, end_stop.arrival_seconds - start_stop.departure_seconds)
+                    scheduled_speed_kmh = leg_distance / scheduled_leg * 3.6
+                    observed_speed_kmh = scheduled_speed_kmh * trip_rng.uniform(
+                        float(settings["speed_observation_factor_min"]),
+                        float(settings["speed_observation_factor_max"]),
+                    )
+                    observed_distance_m = _distance((lat, lon), (feed.stops[end_stop.stop_id].lat, feed.stops[end_stop.stop_id].lon))
                     prediction_id = hashlib.sha1(f"{run_id}|{service_day}|{trip.trip_id}|{leg_index}|{step}".encode()).hexdigest()[:20]
                     pings.append({
                         "prediction_id": prediction_id, "run_id": "", "timestamp_utc": _stamp(timestamp),
                         "service_date": service_day.isoformat(), "bus_id": bus_id, "route_id": trip.route_id,
                         "trip_id": trip.trip_id, "direction_id": trip.direction_id, "lat": round(lat, 7),
-                        "lon": round(lon, 7), "speed_kmh": round(leg_distance / duration * 3.6, 3),
+                        "lon": round(lon, 7), "speed_kmh": round(observed_speed_kmh, 3),
                         "current_stop_index": leg_index, "current_stop_id": start_stop.stop_id,
                         "target_stop_id": end_stop.stop_id,
-                        "distance_to_next_stop_m": round(max(0, leg_distance * (1 - fraction)), 2),
+                        "distance_to_next_stop_m": round(observed_distance_m, 2),
                         "hour_local": timestamp.astimezone(ZoneInfo(local_tz)).hour,
                         "noise_m": round(noise_m, 3),
                     })
                     target_time = _utc(service_day, arrive, local_tz)
-                    eta_labels.append({"prediction_id": prediction_id, "actual_eta_min": round((target_time - timestamp).total_seconds() / 60, 4)})
+                    # Preserve a positive target for the last pre-arrival ping;
+                    # four-decimal minute rounding collapsed sub-second ETAs to 0.
+                    eta_labels.append({"prediction_id": prediction_id, "actual_eta_min": round((target_time - timestamp).total_seconds() / 60, 6)})
 
     for collection in (stop_truth, stop_observations, delay_labels, pings, quality_log):
         for row in collection:

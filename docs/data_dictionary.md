@@ -10,11 +10,11 @@
 | `service_date` | `YYYY-MM-DD` | Simulated local service date used for chronological splitting. |
 | `bus_id`, `route_id`, `trip_id`, `direction_id` | string | Synthetic bus and pinned GTFS identifiers. |
 | `lat`, `lon` | decimal degrees | Simulated position with configured GPS perturbation. |
-| `speed_kmh` | km/h | Simulated instantaneous movement speed; zero while stopped. |
+| `speed_kmh` | km/h | Noisy speed observation based on the scheduled leg speed and an independent configured observation factor; it does not use the realized future travel duration. |
 | `current_stop_index` | integer | Index of the most recently passed stop in the trip sequence. |
 | `current_stop_id` | string | Stop at the start of the current simulated leg. |
 | `target_stop_id` | string | Next scheduled stop for this prediction row. |
-| `distance_to_next_stop_m` | metres | Along-leg distance remaining, with position noise excluded. |
+| `distance_to_next_stop_m` | metres | Straight-line distance from the noisy observed coordinate to the next stop. |
 | `hour_local` | integer | Local hour of the observation (0–23). |
 | `noise_m` | metres | GPS perturbation magnitude applied to this sample. |
 
@@ -26,6 +26,8 @@ Telemetry deliberately excludes actual future arrival time, ETA label, injected 
 - `event_labels.csv`: event ID, event type, route, bus/pair, stop, start/end UTC, severity and label rule version. Labels derive from unperturbed simulator state.
 - `stop_observations.csv`: noisy stop-arrival observations plus reference schedule values used by the event detector. Stop observations are independently subject to the configured dropout probability; the quality log records missing observations. This is a simulation proxy for incomplete operational observations, not a detector using the hidden stop truth.
 - `quality_log.csv`: expected ping windows and missing/invalid sample intervals, including missing stop observations; missing pings cannot be represented as telemetry rows.
+- `metrics.json`: chronological split dates, validation selection, all candidate ETA test metrics, selected-model breakdowns by route/hour, default-threshold event scores, validation-selected event thresholds and their untouched-test scores, plus limitations.
+- `robustness.json`: test metrics for noisy-GPS and high-dropout variants using the model and event thresholds selected on normal validation data.
 
 The SQLite `pings` table is a public-serving projection and omits `direction_id` and `current_stop_id`, which remain available in the generated CSV for offline analysis. API responses must never join simulator truth labels.
 
