@@ -1,8 +1,8 @@
 # Data Sources and Route Plan
 
 **Project:** carbonOrbit — Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility  
-**Status:** Source review complete; route-level audit blocked pending retrieval of a reproducible feed snapshot
-**Reviewed:** 19 November 2026
+**Status:** Route-level audit complete using a pinned community GTFS fallback; DULT official-feed access and licence remain unverified
+**Reviewed:** 20 November 2026
 
 ## 1. Purpose
 
@@ -12,34 +12,34 @@ This project needs a real bus network as the geographic and timetable framework,
 
 | Source | What it provides | Status and use | Caveats |
 |---|---|---|---|
-| [DULT Transport Data Hub](https://tdh.dult-karnataka.com/) | Karnataka transport open-data portal; BMTC open-data access is referenced by the Enroute partners | **Check first** for a downloadable BMTC feed and its licence/access terms before selecting the project snapshot | Portal access, feed version, permitted use, and whether vehicle positions are available have not yet been verified for this project |
-| [Vonter BMTC GTFS](https://github.com/Vonter/bmtc-gtfs) | Community-maintained GTFS schedule data for routes, stops, trips, shapes and timetables | **Practical fallback** for route geometry and stop sequences if the team records the exact downloaded snapshot and licence | Explicitly unofficial. Its maintainer warns that the upstream Namma BMTC 2.0 information has incorrect schedules and stop timings; some times are interpolated. It is not a live GPS feed. Repository states ODbL-1.0; preserve attribution and check share-alike obligations before redistributing adapted database contents. |
+| [DULT Transport Data Hub](https://tdh.dult-karnataka.com/) | Karnataka transport open-data portal; BMTC open-data access is referenced by the Enroute partners | Checked on 20 November 2026; the portal returned a 502 gateway error, so no feed or licence terms could be verified | No official BMTC dataset or licence is claimed in this audit; re-check if access becomes available |
+| [Vonter BMTC GTFS](https://github.com/Vonter/bmtc-gtfs) | Community-maintained GTFS schedule data for routes, stops, trips, shapes and timetables | **Selected reproducible fallback snapshot** at commit `a4702664d65bfbb37290a5f75effaa24ead1d9dd`; used for route geometry and stop sequences only | Explicitly unofficial and derived from Namma BMTC 2.0. The maintainer warns of inaccurate timetables/stop times, interpolated arrivals, and missing or failed routes/stops/timetables. It is not a live GPS feed. ODbL-1.0 applies; preserve attribution and assess share-alike obligations before redistributing adapted database contents. |
 | [Mobility Database feed record](https://mobilitydatabase.org/feeds/gtfs/mdb-2595) | Catalog entry, feed validation, service dates and archived snapshots for the Vonter feed | Useful for reproducible discovery and validation; save the download date and archive used | It catalogs the community feed, so it does not make the source official or validate schedule accuracy. |
 
 An industry announcement confirms Bengaluru's BMTC GTFS open-data initiative and points to the DULT portal, but it does not by itself establish the licence or exact dataset currently downloadable. We must record those from the portal/feed metadata when we access it.
 
 ## 3. Snapshot and audit record
 
-The DULT portal could not be independently opened during this review (gateway error), so no DULT download or licence is claimed. The community feed repository was reviewed on 19 November 2026. Its README states that it is unofficial, sourced from the Namma BMTC 2.0 app, and distributed under ODbL-1.0; it also warns that timetables and stop timings may be inaccurate, arrival times may be interpolated, and some routes, stops, and timetables may be missing. This identifies it as a candidate, but does not establish that a particular snapshot was downloaded, validated, or audited.
+The DULT portal returned a 502 gateway error when checked on 20 November 2026. No official DULT download or licence is claimed. The fallback archive was downloaded from the Vonter repository and matched against the pinned repository commit below. The feed README identifies it as unofficial, derived from Namma BMTC 2.0, and licensed under ODbL-1.0; it warns that schedules and stop timings may be inaccurate, some arrivals are interpolated, and some routes, stops, and timetables may be missing.
 
-- Download URL: no archive downloaded in this review; repository points to `https://raw.githubusercontent.com/Vonter/bmtc-gtfs/main/gtfs/bmtc.zip`
-- Review date: 19 November 2026 (source pages); archive download date: not recorded
-- Feed version / service date range: not verified from a local archive
-- Licence: repository README states ODbL-1.0; assess attribution and share-alike duties before distributing adapted data
-- SHA-256 checksum: unavailable (no archive downloaded)
-- GTFS files and validator result: not independently inspected; no validation result claimed
-- Known source limitations: unofficial upstream app; inaccurate schedules/stop times; interpolated arrival times; known missing/failed routes, stops, timetables, and fare information
-- Local storage: no raw feed stored
+- Snapshot revision: [`a4702664d65bfbb37290a5f75effaa24ead1d9dd`](https://github.com/Vonter/bmtc-gtfs/tree/a4702664d65bfbb37290a5f75effaa24ead1d9dd)
+- Pinned archive URL: `https://raw.githubusercontent.com/Vonter/bmtc-gtfs/a4702664d65bfbb37290a5f75effaa24ead1d9dd/gtfs/bmtc.zip`
+- Download/audit date: 20 November 2026
+- Feed version and dates from `feed_info.txt`: version `20261109`, feed start `20261109`, feed end `20271109`
+- Archive size: 92,988,913 bytes; SHA-256: `812c7d472ff116024ca1e0a7ff6e28662f762ca09265da8d5c7e9f6241cf8a45`
+- Archive contents: 12 GTFS text files; 5,063 routes, 10,128 stops, 69,642 trips, and 2,238,693 stop-time rows
+- Local consistency checks: route, stop, and trip IDs are unique; stop-time rows have positive numeric sequences with no duplicate `(trip_id, stop_sequence)` pairs; no stop-time rows reference unknown trips or stops; all trip shape references resolve. This is a project-level sanity check, **not** a pass from an official GTFS validator.
+- Stop coordinate extent: latitude 12.548240–13.484340, longitude 77.029410–77.958580
+- Licence: repository README and `LICENSE` state ODbL-1.0; retain attribution and assess share-alike requirements before redistribution. Some individual contents may be BMTC copyright.
+- Local storage: the raw archive is kept in ignored `data/raw/` and is not committed to this project repository.
 
-Mobility Database catalogues this community feed and may provide dated archives and validation metadata; catalog validation does not establish schedule accuracy or official status. Record the current archive and service dates when a team member downloads a snapshot.
-
-The route-selection table remains unfilled. The feed's CSV summaries are too large for the connected repository reader, and direct raw-file download was unavailable in this environment. No route IDs, nearest-stop distances, or shape coverage have been invented. A team member should download a dated archive, verify the campus point against the official BMSIT&M location, then complete the audit before routes are frozen.
+The approximate BMSIT campus reference point (13.134592, 77.568169) is from a geotagged photograph in the official BMSIT&M February 2025 newsletter. Distances below are straight-line Haversine distances, not walking distances.
 
 Keep the original snapshot unchanged. Put any cleaned or filtered derivative in the processed-data area and document the transformation script and source snapshot.
 
 ## 4. Route selection method
 
-The team plan calls for three BMTC routes near BMSIT. Route IDs should be selected from the chosen snapshot rather than guessed. After downloading the feed:
+The team plan calls for three BMTC routes near BMSIT. For this audit, route IDs were selected from the pinned snapshot rather than guessed. The selection method was:
 
 1. Find BMSIT&M's approximate coordinates and inspect nearby GTFS stops.
 2. List routes serving those stops; select three with usable stop sequences and shape geometry.
@@ -49,9 +49,11 @@ The team plan calls for three BMTC routes near BMSIT. Route IDs should be select
 
 | GTFS route ID | Public route name | Direction / termini | Stops | Shape available? | Nearest stop to BMSIT (distance) | Selection note |
 |---|---|---|---:|---|---|---|
-| Pending dated feed audit | | | | | | |
-| Pending dated feed audit | | | | | | |
-| Pending dated feed audit | | | | | | |
+| `BMTC:dd9ea3794c96` | 285-M KBS-BMSIT | BMSIT College Campus Yelahanka ⇔ Kempegowda Bus Station (Majestic/KBS) | 53 | Yes (100% of listed trips) | BMSIT College Campus Yelahanka (0.099 km) | Direct campus service; two directions, 5 trips in snapshot; longer route |
+| `BMTC:6f4d45186ddd` | 285 BMSITY-YHKOT | BMSIT College Campus Yelahanka ⇔ Yelahanka Old Town | 21 | Yes (100% of listed trips) | BMSIT College Campus Yelahanka (0.099 km) | Direct campus service; two directions, 2 trips in snapshot; shorter route |
+| `BMTC:b202977c0fc0` | 406 | Nelamangala Bus Station ⇔ NES Office | 110 | Yes (100% of listed trips) | Avalahalli Doddaballapura Road (0.132 km) | Nearby route; two directions and 15 trips in snapshot; adds a longer route with broader trip representation |
+
+The direct 500-D CSB-BMSIT route was considered but not selected because the snapshot contains only one trip in one direction for it. Stop counts are unique stops across a route's listed trips. Snapshot trip counts do not establish current BMTC service frequency.
 
 ## 5. Data boundary and ethics
 
@@ -63,7 +65,8 @@ The team plan calls for three BMTC routes near BMSIT. Route IDs should be select
 
 ## References
 
-1. Directorate of Urban Land Transport, Karnataka, [Transport Data Hub](https://tdh.dult-karnataka.com/), accessed 19 November 2026. Dataset and licence details pending direct feed audit.
-2. Vonter, [bmtc-gtfs: Unofficial GTFS dataset for BMTC](https://github.com/Vonter/bmtc-gtfs), accessed 19 November 2026. Repository README documents provenance, limitations and ODbL-1.0 licensing; no archive was downloaded for this audit.
-3. MobilityData, [Mobility Database: BMTC GTFS feed (mdb-2595)](https://mobilitydatabase.org/feeds/gtfs/mdb-2595), accessed 19 November 2026.
+1. Directorate of Urban Land Transport, Karnataka, [Transport Data Hub](https://tdh.dult-karnataka.com/), checked 20 November 2026; portal returned a 502 gateway error. No dataset or licence terms verified.
+2. Vonter, [bmtc-gtfs: Unofficial GTFS dataset for BMTC](https://github.com/Vonter/bmtc-gtfs/tree/a4702664d65bfbb37290a5f75effaa24ead1d9dd), snapshot revision accessed 20 November 2026. The pinned README and license document provenance, caveats, and ODbL-1.0 licensing.
+3. MobilityData, [Mobility Database: BMTC GTFS feed (mdb-2595)](https://mobilitydatabase.org/feeds/gtfs/mdb-2595), accessed 19 November 2026. This catalog entry does not make the community feed official or establish schedule accuracy.
 4. Mercedes-Benz Research and Development India, WRI India, and Villgro, [“Open Data Fuels Bengaluru’s First-Ever End-to-End Public Transport App Solutions”](https://www.mbrdi.co.in/assets/docs/Open%20Data%20Fuels%20Bengaluru%E2%80%99s%20First-Ever%20End-to-End%20Public%20Transport%20App%20Solutions.pdf), 10 July 2025.
+5. BMS Institute of Technology & Management, [February 2025 newsletter](https://bmsit.ac.in/pdf/newsletter/Feb%202025.pdf), used only for an approximate geotagged campus reference point.
