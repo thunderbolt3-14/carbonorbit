@@ -64,5 +64,5 @@ These variants are controlled simulator perturbations. They do not measure actua
 - These results validate that the pipeline can generate data, fit candidates, select using validation, score a held-out period and repeat the configured run. They do not establish real-world ETA accuracy or service improvement.
 - The GTFS snapshot is unofficial and has documented schedule caveats. All vehicle movements and event truth labels are synthetic.
 - The simulator produces no passenger diversion observations. Emissions factors remain unset, so no carbon or pollutant reduction is calculated.
-- The API/database ingestion ran as part of the pipeline. A manual browser review of the populated dashboard remains outstanding.
+- The API/database ingestion ran as part of the pipeline. A manual browser pass confirmed the dashboard loaded 22 buses, 100 alerts, RandomForest and the 0.22-minute test MAE from the populated local API.
 - The project has no live BMTC vehicle data or external-city validation in this run.
