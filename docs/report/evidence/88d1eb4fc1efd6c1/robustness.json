@@ -1,0 +1,272 @@
+{
+  "high_dropout": {
+    "eta_test": {
+      "count": 18915,
+      "mae_min": 0.2235589035136618,
+      "median_absolute_error_min": 0.10591972271928252,
+      "p90_absolute_error_min": 0.4164025282735125,
+      "rmse_min": 0.6431123289759321,
+      "within_2min_pct": 98.88977002379065
+    },
+    "event_threshold_sensitivity": {
+      "bunching_ratio=0.33": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "bunching_ratio=0.5": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "bunching_ratio=0.75": {
+        "alerts": 9,
+        "f1": 0.64,
+        "fn": 8,
+        "fp": 1,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.8888888888888888,
+        "recall": 0.5,
+        "tp": 8,
+        "true_events": 16
+      },
+      "delay_minutes=10": {
+        "alerts": 87,
+        "f1": 0.8160919540229885,
+        "fn": 16,
+        "fp": 16,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.8160919540229885,
+        "recall": 0.8160919540229885,
+        "tp": 71,
+        "true_events": 87
+      },
+      "delay_minutes=3": {
+        "alerts": 98,
+        "f1": 0.6938775510204082,
+        "fn": 30,
+        "fp": 30,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.6938775510204082,
+        "recall": 0.6938775510204082,
+        "tp": 68,
+        "true_events": 98
+      },
+      "delay_minutes=5": {
+        "alerts": 93,
+        "f1": 0.6989247311827957,
+        "fn": 28,
+        "fp": 28,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.6989247311827957,
+        "recall": 0.6989247311827957,
+        "tp": 65,
+        "true_events": 93
+      }
+    },
+    "events": {
+      "bunching": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "delay": {
+        "alerts": 93,
+        "f1": 0.6989247311827957,
+        "fn": 28,
+        "fp": 28,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.6989247311827957,
+        "recall": 0.6989247311827957,
+        "tp": 65,
+        "true_events": 93
+      }
+    },
+    "events_at_normal_selected_thresholds": {
+      "bunching": {
+        "metrics": {
+          "alerts": 9,
+          "f1": 0.64,
+          "fn": 8,
+          "fp": 1,
+          "matching_tolerance_seconds": 30,
+          "precision": 0.8888888888888888,
+          "recall": 0.5,
+          "tp": 8,
+          "true_events": 16
+        },
+        "selected_on_normal_validation_threshold": 0.75
+      },
+      "delay": {
+        "metrics": {
+          "alerts": 98,
+          "f1": 0.6938775510204082,
+          "fn": 30,
+          "fp": 30,
+          "matching_tolerance_seconds": 30,
+          "precision": 0.6938775510204082,
+          "recall": 0.6938775510204082,
+          "tp": 68,
+          "true_events": 98
+        },
+        "selected_on_normal_validation_threshold": 3.0
+      }
+    },
+    "model": "RandomForest",
+    "note": "The model selected on the normal run was applied without refitting.",
+    "run_id": "cfd3a68ea064e90a"
+  },
+  "noisy_gps": {
+    "eta_test": {
+      "count": 21007,
+      "mae_min": 0.24460666337939482,
+      "median_absolute_error_min": 0.1207066947209251,
+      "p90_absolute_error_min": 0.45780576601351325,
+      "rmse_min": 0.6611533924022609,
+      "within_2min_pct": 98.8242014566573
+    },
+    "event_threshold_sensitivity": {
+      "bunching_ratio=0.33": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "bunching_ratio=0.5": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "bunching_ratio=0.75": {
+        "alerts": 13,
+        "f1": 0.8275862068965517,
+        "fn": 4,
+        "fp": 1,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.9230769230769231,
+        "recall": 0.75,
+        "tp": 12,
+        "true_events": 16
+      },
+      "delay_minutes=10": {
+        "alerts": 87,
+        "f1": 0.8850574712643678,
+        "fn": 10,
+        "fp": 10,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.8850574712643678,
+        "recall": 0.8850574712643678,
+        "tp": 77,
+        "true_events": 87
+      },
+      "delay_minutes=3": {
+        "alerts": 98,
+        "f1": 0.7551020408163265,
+        "fn": 24,
+        "fp": 24,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.7551020408163265,
+        "recall": 0.7551020408163265,
+        "tp": 74,
+        "true_events": 98
+      },
+      "delay_minutes=5": {
+        "alerts": 93,
+        "f1": 0.7849462365591398,
+        "fn": 20,
+        "fp": 20,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.7849462365591398,
+        "recall": 0.7849462365591398,
+        "tp": 73,
+        "true_events": 93
+      }
+    },
+    "events": {
+      "bunching": {
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
+      },
+      "delay": {
+        "alerts": 93,
+        "f1": 0.7849462365591398,
+        "fn": 20,
+        "fp": 20,
+        "matching_tolerance_seconds": 30,
+        "precision": 0.7849462365591398,
+        "recall": 0.7849462365591398,
+        "tp": 73,
+        "true_events": 93
+      }
+    },
+    "events_at_normal_selected_thresholds": {
+      "bunching": {
+        "metrics": {
+          "alerts": 13,
+          "f1": 0.8275862068965517,
+          "fn": 4,
+          "fp": 1,
+          "matching_tolerance_seconds": 30,
+          "precision": 0.9230769230769231,
+          "recall": 0.75,
+          "tp": 12,
+          "true_events": 16
+        },
+        "selected_on_normal_validation_threshold": 0.75
+      },
+      "delay": {
+        "metrics": {
+          "alerts": 98,
+          "f1": 0.7551020408163265,
+          "fn": 24,
+          "fp": 24,
+          "matching_tolerance_seconds": 30,
+          "precision": 0.7551020408163265,
+          "recall": 0.7551020408163265,
+          "tp": 74,
+          "true_events": 98
+        },
+        "selected_on_normal_validation_threshold": 3.0
+      }
+    },
+    "model": "RandomForest",
+    "note": "The model selected on the normal run was applied without refitting.",
+    "run_id": "38b535b74edd479d"
+  }
+}

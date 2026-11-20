@@ -1,0 +1,35 @@
+{
+  "base_url": "http://127.0.0.1:<ephemeral-port>",
+  "endpoints": {
+    "alerts": {
+      "max_ms": 34.7740000001977,
+      "p50_ms": 11.997000000064872,
+      "p95_ms": 32.384160000242446,
+      "samples": 50
+    },
+    "buses": {
+      "max_ms": 427.6537999999164,
+      "p50_ms": 353.7908000000698,
+      "p95_ms": 381.32821999995485,
+      "samples": 50
+    },
+    "eta": {
+      "max_ms": 286.99849999975413,
+      "p50_ms": 252.13559999997415,
+      "p95_ms": 268.50447999984226,
+      "samples": 50
+    },
+    "metrics": {
+      "max_ms": 32.22180000011576,
+      "p50_ms": 8.537799999885465,
+      "p95_ms": 30.936305000159336,
+      "samples": 50
+    }
+  },
+  "latency_target_ms_p95": 1000,
+  "measured_at_utc": "2026-11-20T23:24:37+00:00",
+  "measurement_scope": "serial requests to the local Flask development server; not a production load test",
+  "meets_all_endpoint_p95_target": true,
+  "run_id": "88d1eb4fc1efd6c1",
+  "samples_per_endpoint": 50
+}

@@ -1,0 +1,17 @@
+{
+  "checked_date": "2026-11-21",
+  "url": "http://127.0.0.1:5050/",
+  "run_id": "88d1eb4fc1efd6c1",
+  "check_type": "manual browser verification after API refresh",
+  "observed": {
+    "simulated_data_warning_visible": true,
+    "simulated_buses": 22,
+    "current_alerts": 100,
+    "eta_test_mae_minutes_displayed": 0.22,
+    "selected_model": "RandomForest",
+    "route_positions_rendered": true,
+    "alerts_rendered": true,
+    "eta_predictions_rendered": true
+  },
+  "limitations": "Local populated demo database and synthetic evaluation only; this is not evidence of live BMTC service or a production deployment."
+}
