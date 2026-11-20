@@ -2,7 +2,7 @@
 
 **Project:** carbonOrbit  
 **Owner:** Rahul A.M. (Person B)  
-**Status:** Initial design draft for team review
+**Status:** Initial design draft for team review; Phase 2 route inputs are documented in `data_sources.md`
 
 ## Goal
 
@@ -10,7 +10,7 @@ Generate reproducible, clearly synthetic bus position pings along selected BMTC 
 
 ## Inputs
 
-- Three audited GTFS routes selected using `data_sources.md`.
+- Three routes from the pinned GTFS snapshot audited in `data_sources.md`: `BMTC:dd9ea3794c96` (285-M KBS-BMSIT), `BMTC:6f4d45186ddd` (285 BMSITY-YHKOT), and `BMTC:b202977c0fc0` (406). These provide route geometry and stop-sequence inputs only; simulated vehicle movement and event labels remain synthetic.
 - Simulation settings in `config/simulation.yaml` (fixed random seed, date range, ping interval, bus counts, noise/dropout levels, and event settings).
 - Route shapes when present; otherwise ordered stop coordinates, with the fallback documented.
 
