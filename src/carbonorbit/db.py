@@ -160,6 +160,18 @@ def ingest_run(database: str | Path, run_dir: str | Path, evaluation_dir: str | 
                                 "INSERT OR REPLACE INTO evaluation_metrics VALUES (?, ?, ?, ?, ?, ?)",
                                 (run_id, f"{event_type}_{metric_name}", value, "ratio" if metric_name in ("precision", "recall", "f1") else "count", "test", "overall"),
                             )
+                for event_type, selection in metrics.get("event_threshold_selection", {}).items():
+                    db.execute(
+                        "INSERT OR REPLACE INTO evaluation_metrics VALUES (?, ?, ?, ?, ?, ?)",
+                        (run_id, f"{event_type}_selected_threshold", float(selection["selected_threshold"]), "minutes" if event_type == "delay" else "ratio", "validation", "overall"),
+                    )
+                    for metric_name in ("precision", "recall", "f1", "true_events", "alerts", "tp", "fp", "fn"):
+                        value = selection.get("test_metrics", {}).get(metric_name)
+                        if isinstance(value, (float, int)):
+                            db.execute(
+                                "INSERT OR REPLACE INTO evaluation_metrics VALUES (?, ?, ?, ?, ?, ?)",
+                                (run_id, f"{event_type}_selected_{metric_name}", value, "ratio" if metric_name in ("precision", "recall", "f1") else "count", "test", "overall"),
+                            )
     return run_id
 
 

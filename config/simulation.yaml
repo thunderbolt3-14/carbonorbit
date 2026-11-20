@@ -16,6 +16,8 @@ simulation:
   days: 28
   ping_interval_seconds: 30
   gps_noise_std_m: 8.0
+  speed_observation_factor_min: 0.75
+  speed_observation_factor_max: 1.25
   ping_dropout_probability: 0.03
   delay_injection_probability: 0.12
   delay_minutes_min: 3.0

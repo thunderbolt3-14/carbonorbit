@@ -45,6 +45,17 @@ def evaluate_robustness(normal_run: str | Path, variant_runs: list[str | Path], 
             variant_truth = variant_truth[variant_truth.service_date.astype(str).isin(test_days)]
         if "service_date" in variant_alerts:
             variant_alerts = variant_alerts[variant_alerts.service_date.astype(str).isin(test_days)]
+        variant_sensitivity = _sensitivity_event_metrics(sensitivity, test_days, {
+            "delay_minutes": [variant_manifest.get("event_rules", {}).get("delay_minutes", 5.0), *variant_manifest.get("event_rules", {}).get("delay_sensitivity_minutes", [])],
+            "bunching_ratio": [variant_manifest.get("event_rules", {}).get("bunching_headway_ratio", 0.5), *variant_manifest.get("event_rules", {}).get("bunching_sensitivity_ratios", [])],
+        })
+        normal_selected_event_scores = {}
+        for event_type, selection in base_metrics.get("event_threshold_selection", {}).items():
+            threshold_key = f"{selection['threshold_type']}={float(selection['selected_threshold']):g}"
+            normal_selected_event_scores[event_type] = {
+                "selected_on_normal_validation_threshold": selection["selected_threshold"],
+                "metrics": variant_sensitivity.get(threshold_key, {}),
+            }
         results[name] = {
             "run_id": variant_manifest["run_id"],
             "eta_test": _metrics(variant_test.actual_eta_min, prediction),
@@ -52,10 +63,8 @@ def evaluate_robustness(normal_run: str | Path, variant_runs: list[str | Path], 
                 "delay": _event_match_metrics(variant_truth, variant_alerts, "delay"),
                 "bunching": _event_match_metrics(variant_truth, variant_alerts, "bunching"),
             },
-            "event_threshold_sensitivity": _sensitivity_event_metrics(sensitivity, test_days, {
-                "delay_minutes": [variant_manifest.get("event_rules", {}).get("delay_minutes", 5.0), *variant_manifest.get("event_rules", {}).get("delay_sensitivity_minutes", [])],
-                "bunching_ratio": [variant_manifest.get("event_rules", {}).get("bunching_headway_ratio", 0.5), *variant_manifest.get("event_rules", {}).get("bunching_sensitivity_ratios", [])],
-            }),
+            "event_threshold_sensitivity": variant_sensitivity,
+            "events_at_normal_selected_thresholds": normal_selected_event_scores,
             "model": selected,
             "note": "The model selected on the normal run was applied without refitting.",
         }

@@ -1,6 +1,6 @@
 # carbonOrbit Evaluation Plan
 
-**Status:** Phase 2 draft for team review  
+**Status:** Team approval accepted per project-owner instruction, 20 November 2026; individual reviewer names were not provided. Guide approval is not a project gate.
 **Prepared by:** Rahul Velpuri (Person D)  
 **Project:** carbonOrbit — GPS-enabled public transit monitoring and emissions scenarios
 
@@ -64,6 +64,7 @@ The exact dates, simulator seed, route coverage, and row counts must be recorded
 
 - Fit imputers, scalers, encoders, and feature selection on training data only; apply the fitted transformations to validation and test data.
 - Build every feature from information available at the prediction timestamp. Do not use actual future arrival time, future pings, realized segment duration after prediction, or simulator-only future state as model inputs.
+- In the simulator, derive speed observations from scheduled leg speed with an independent observation factor; do not calculate the predictor's speed feature from the realized duration of the leg being predicted. Derive distance from the observed, GPS-perturbed coordinate to the next stop, not the hidden simulator progress fraction.
 - Keep all rows from a service day in the same split. Where trip IDs span service dates, keep the full trip together.
 - Tune and select models using training and validation only. Use the test set once for the final reported comparison.
 - Add automated checks in `tests/test_leakage.py` for future-derived columns, split overlap, and preprocessing fitted outside the training set.
@@ -186,7 +187,7 @@ Before modeling begins, the team should record agreement on:
 6. Emissions boundary, factors, occupancy/diversion scenarios, and supported pollutants.
 7. Dataset schema, seed/version, artifact locations, and the process for freezing this plan.
 
-After review, update the status at the top to **Team reviewed and frozen**, add reviewer names/date, and tag the agreed version (the master plan proposed `eval-plan-v1`).
+The project owner confirmed team approval on 20 November 2026 and instructed that guide approval is not a gate. Preserve that approval record without inventing individual reviewer names. Tag the merged agreed version `eval-plan-v1`; change the protocol only through a dated amendment.
 
 ## References to verify for the emissions section
 
