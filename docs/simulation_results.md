@@ -1,7 +1,7 @@
 # Initial Synthetic Evaluation Results
 
-**Run:** `88d1eb4fc1efd6c1`  
-**Generated:** 20 November 2026  
+**Run:** `88d1eb4fc1efd6c1`
+**Generated:** 20 November 2026
 **Status:** Reproducible initial result; simulator-only evidence, not a claim about actual BMTC operations.
 
 ## Dataset and reproducibility
