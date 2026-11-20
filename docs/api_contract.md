@@ -10,13 +10,13 @@ All responses are JSON. Timestamps use ISO-8601 UTC (`Z`). Distances use metres,
 | Method and path | Purpose | Success response |
 |---|---|---|
 | `GET /ping` | Health/readiness | `{"ok":true,"service":"carbonOrbit","version":"v1"}` |
-| `GET /buses?route_id=...` | Latest simulated position per bus | `{"run_id":"...","buses":[{"bus_id":"...","route_id":"...","trip_id":"...","timestamp":"...Z","lat":0.0,"lon":0.0,"speed_kmh":0.0,"next_stop_id":"..."}]}` |
-| `GET /eta?bus_id=...` | Latest stored prediction per bus | `{"run_id":"...","predictions":[{"bus_id":"...","route_id":"...","target_stop_id":"...","predicted_eta_min":0.0,"interval_low_min":null,"interval_high_min":null,"model":"...","timestamp":"...Z"}]}` |
-| `GET /alerts?route_id=...&limit=100` | Detector alerts (never ground-truth labels) | `{"run_id":"...","alerts":[{"alert_id":"...","type":"delay|bunching","route_id":"...","bus_id":"...","timestamp":"...Z","severity":0.0,"message":"..."}]}` |
-| `GET /metrics` | Latest evaluation summary | `{"run_id":"...","metrics":{"eta_mae_min":null,"eta_rmse_min":null,"delay_precision":null,"delay_recall":null,"delay_f1":null,"bunching_precision":null,"bunching_recall":null,"bunching_f1":null}}` |
+| `GET /buses?route_id=...` | Latest simulated position per bus | `{"run_id":"...","buses":[{"prediction_id":"...","bus_id":"...","route_id":"...","trip_id":"...","timestamp_utc":"...Z","lat":0.0,"lon":0.0,"speed_kmh":0.0,"next_stop_id":"...","distance_to_next_stop_m":0.0}]}` |
+| `GET /eta?bus_id=...` | Stored held-out predictions | `{"run_id":"...","predictions":[{"prediction_id":"...","bus_id":"...","route_id":"...","target_stop_id":"...","predicted_eta_min":0.0,"interval_low_min":null,"interval_high_min":null,"model":"...","timestamp_utc":"...Z"}]}` |
+| `GET /alerts?route_id=...&limit=100` | Detector alerts (never ground-truth labels) | `{"run_id":"...","alerts":[{"alert_id":"...","type":"delay|bunching","route_id":"...","bus_id":"...","related_bus_id":null,"target_stop_id":"...","timestamp_utc":"...Z","severity":0.0,"message":"..."}]}` |
+| `GET /metrics` | Latest evaluation summary | `{"run_id":"...","metrics":{"eta_mae_min":{"value":0.0,"unit":"minutes","partition":"test","group":"overall"}}}` |
 | `POST /emissions/scenario` | Calculate a declared scenario | Input and output below |
 
-An empty collection is a valid `200` response when no artifact has been loaded. Unknown route or bus IDs return an empty collection, not a fabricated estimate. The alerts `limit` must be an integer; values are bounded to 1–500.
+An empty collection is a valid `200` response when no artifact has been loaded. Unknown route or bus IDs return an empty collection, not a fabricated estimate. The `buses` position is the latest stored ping for each bus; `eta` currently returns up to 500 stored test predictions, newest first. The alerts `limit` must be an integer; values are bounded to 1–500. The API uses the field name `timestamp_utc` (not `timestamp`) for all returned event and position timestamps. ETA interval fields are `null` because the current evaluation does not produce calibrated intervals.
 
 ## Emissions request
 

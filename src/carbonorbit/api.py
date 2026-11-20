@@ -18,7 +18,10 @@ def _as_dicts(rows) -> list[dict]:
 def create_app(database: str | Path = "data/carbonorbit.db", dashboard_dir: str | Path = "dashboard") -> Flask:
     app = Flask(__name__)
     app.config["DATABASE"] = str(database)
-    app.config["DASHBOARD_DIR"] = str(dashboard_dir)
+    dashboard_path = Path(dashboard_dir)
+    if not dashboard_path.is_absolute():
+        dashboard_path = Path(__file__).resolve().parents[2] / dashboard_path
+    app.config["DASHBOARD_DIR"] = str(dashboard_path.resolve())
 
     def db() -> sqlite3.Connection:
         if "database" not in g:
@@ -88,14 +91,14 @@ def create_app(database: str | Path = "data/carbonorbit.db", dashboard_dir: str 
 
     @app.get("/api/v1/alerts")
     def alerts():
-        run_id = latest_run_id(db())
-        if not run_id:
-            return jsonify({"run_id": None, "alerts": []})
-        route_id = request.args.get("route_id")
         try:
             limit = max(1, min(500, int(request.args.get("limit", "100"))))
         except ValueError:
             return jsonify({"error": {"code": "invalid_request", "message": "limit must be an integer"}}), 400
+        run_id = latest_run_id(db())
+        if not run_id:
+            return jsonify({"run_id": None, "alerts": []})
+        route_id = request.args.get("route_id")
         sql = "SELECT alert_id, alert_type AS type, route_id, bus_id, related_bus_id, target_stop_id, timestamp_utc, severity, message FROM alerts WHERE run_id=?"
         params: list = [run_id]
         if route_id:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
@@ -130,6 +131,8 @@ def load_gtfs(path: str | Path, route_ids: list[str], revision: str = "unknown")
                 lat, lon = float(row["stop_lat"]), float(row["stop_lon"])
             except (KeyError, ValueError) as exc:
                 raise ValueError(f"Stop {stop_id!r} has invalid coordinates") from exc
+            if not (math.isfinite(lat) and math.isfinite(lon) and -90 <= lat <= 90 and -180 <= lon <= 180):
+                raise ValueError(f"Stop {stop_id!r} has out-of-range or non-finite coordinates")
             stops[stop_id] = Stop(stop_id, row.get("stop_name", ""), lat, lon)
         missing_stops = sorted(stop_ids - stops.keys())
         if missing_stops:
@@ -139,7 +142,19 @@ def load_gtfs(path: str | Path, route_ids: list[str], revision: str = "unknown")
         selected_shape_ids = set()
         for row in selected_trip_rows:
             trip_id = row["trip_id"]
-            st_rows = sorted(stop_rows_by_trip[trip_id], key=lambda item: int(item["stop_sequence"]))
+            try:
+                sequenced_rows = [
+                    (int(item["stop_sequence"]), item)
+                    for item in stop_rows_by_trip[trip_id]
+                ]
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(f"Trip {trip_id!r} has a malformed stop_sequence") from exc
+            sequences = [sequence for sequence, _ in sequenced_rows]
+            if any(sequence < 1 for sequence in sequences):
+                raise ValueError(f"Trip {trip_id!r} has a non-positive stop_sequence")
+            if len(sequences) != len(set(sequences)):
+                raise ValueError(f"Trip {trip_id!r} has duplicate stop_sequence values")
+            st_rows = [item for _, item in sorted(sequenced_rows, key=lambda pair: pair[0])]
             if len(st_rows) < 2:
                 continue
             st = tuple(
@@ -151,6 +166,10 @@ def load_gtfs(path: str | Path, route_ids: list[str], revision: str = "unknown")
                 )
                 for item in st_rows
             )
+            if any(item.departure_seconds < item.arrival_seconds for item in st):
+                raise ValueError(f"Trip {trip_id!r} has a departure before its arrival")
+            if any(later.arrival_seconds < earlier.departure_seconds for earlier, later in zip(st, st[1:])):
+                raise ValueError(f"Trip {trip_id!r} has non-monotonic stop times")
             shape_id = row.get("shape_id", "")
             if shape_id:
                 selected_shape_ids.add(shape_id)
