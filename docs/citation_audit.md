@@ -1,6 +1,7 @@
 # carbonOrbit Citation Audit
 
-**Audit date:** 20 November 2026  
+**Audit date:** 20 November 2026
+
 **Purpose:** verify source identity and bibliographic metadata used in the literature survey and report; document access limits and prevent claims from exceeding the available evidence.
 
 ## Audit standard

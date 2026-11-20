@@ -1,8 +1,11 @@
 # carbonOrbit: Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility
 
-**Final project report — current implementation and initial evaluation**  
-**Report date:** 20 November 2026  
-**Repository state:** implementation branch `codex/simulation-validation-fixes`  
+**Final project report — current implementation and initial evaluation**
+
+**Report date:** 20 November 2026
+
+**Repository state:** implementation branch `codex/simulation-validation-fixes`
+
 **Evidence status:** reproducible simulation study; not a field evaluation of BMTC operations
 
 ## Abstract
