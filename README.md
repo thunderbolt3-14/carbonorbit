@@ -35,6 +35,9 @@ assumption-based estimates, not measured effects.
 - tests/ and scripts/ : automated tests and run scripts
 
 ## Status
-Phase 1: shared research and evaluation drafts are in the repository. The GTFS
-snapshot and route audit, source corrections, and team/guide approval of the
-evaluation protocol remain open before implementation and protocol freeze.
+Phase 1: the consolidated literature survey, base-paper analysis, problem
+statement, objectives, contribution statement, and proposed evaluation plan are
+in the repository. Source corrections identified during review have been
+incorporated. The dated GTFS snapshot and three-route audit, remaining full-text
+checks for access-limited papers, and team/guide review of the proposed protocol
+remain open before implementation and protocol freeze.

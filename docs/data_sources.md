@@ -1,7 +1,6 @@
-# Person B: Data Sources and Route Plan
+# Data Sources and Route Plan
 
 **Project:** carbonOrbit — Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility  
-**Owner:** Rahul A.M. (Person B)  
 **Status:** Source review complete; route-level audit blocked pending retrieval of a reproducible feed snapshot
 **Reviewed:** 19 November 2026
 
@@ -34,7 +33,7 @@ The DULT portal could not be independently opened during this review (gateway er
 
 Mobility Database catalogues this community feed and may provide dated archives and validation metadata; catalog validation does not establish schedule accuracy or official status. Record the current archive and service dates when a team member downloads a snapshot.
 
-The route-selection table remains unfilled. The feed's CSV summaries are too large for the connected repository reader, and direct raw-file download was unavailable in this environment. No route IDs, nearest-stop distances, or shape coverage have been invented. Person B should download a dated archive, verify the campus point against the official BMSIT&M location, then complete the audit before routes are frozen.
+The route-selection table remains unfilled. The feed's CSV summaries are too large for the connected repository reader, and direct raw-file download was unavailable in this environment. No route IDs, nearest-stop distances, or shape coverage have been invented. A team member should download a dated archive, verify the campus point against the official BMSIT&M location, then complete the audit before routes are frozen.
 
 Keep the original snapshot unchanged. Put any cleaned or filtered derivative in the processed-data area and document the transformation script and source snapshot.
 

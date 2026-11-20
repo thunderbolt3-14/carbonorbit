@@ -75,6 +75,18 @@
 - **What carbonOrbit can reuse:** Use its data-documentation and raw-GPS-to-structured-transit workflow as a reproducibility reference. The team may consider the dataset only as an external comparison after reviewing access, licence, and scope; it is not a substitute for BMTC route geometry.
 - **Examiner question and answer:** **Does this paper show that a model will work on BMTC?** No. It provides an Astana dataset and data-processing resource; BMTC performance needs separate evaluation.
 
+## 7. Amogha et al. (2026) — Bus Delay and CO2 Estimation
+
+**Citation:** Amogha, B. V., Bairy, P. R., Selvam, S., & Joy, J. D. (2026). “Machine Learning-Based Prediction of Bus Delay and CO2 Emission Estimation Using XGBoost.” In *Data Science and Applications (ICDSA 2025)*, *Lecture Notes in Networks and Systems*, vol. 1795, pp. 216–227. [Springer chapter](https://doi.org/10.1007/978-3-032-15404-0_19). Only the publisher abstract was available for this review.
+
+- **Problem:** Predict bus delays and estimate trip-level CO2 emissions using machine learning.
+- **Data:** The abstract describes real Indian bus GPS and operational data; its detailed data definition and coverage require the full chapter.
+- **Method:** Two XGBoost models are used, one for delay prediction and another for per-trip CO2 estimation.
+- **Metrics and key result:** The abstract reports delay MAE of 49 seconds and R² of 0.9533, and CO2 MAE of 1.903 kg/trip and R² of 0.99615. Treat these as abstract-reported results; the evaluation setup has not been checked in the full text.
+- **Limitation or gap:** The chapter is paywalled. The abstract does not establish the emission boundary, trip definition, validation design, or whether its results transfer to BMTC.
+- **What carbonOrbit reuses:** It is a close comparator showing delay prediction and CO2 estimation have already been combined. carbonOrbit must not claim this integration as novel; its proposed distinction is synthetic BMTC-route benchmarking, event-level detection against simulator labels, and separately stated emissions scenarios.
+- **Questions an examiner could ask, with our answer:** **How is carbonOrbit novel if this paper predicts delay and CO2?** The novelty is not the combination itself. Our proposed contribution is the reproducible BMTC-route simulator and labelled event-detection evaluation, with emissions reported separately as conditional scenarios. This remains a project design claim until implemented and evaluated.
+
 ## Overall takeaway
 
 These papers cover system design, travel-time prediction, delay analysis, and the possible passenger effects of real-time information. Their results come from different cities and data types. carbonOrbit should evaluate its own simulated data, report its own metrics, and describe ridership or emissions impacts as estimates rather than measured outcomes.
@@ -84,6 +96,7 @@ These papers cover system design, travel-time prediction, delay analysis, and th
 - Ganesh et al. (2012): [arXiv paper](https://arxiv.org/abs/1206.0447)
 - Rakhimzhanov and Mansurova (2025): [conference paper DOI](https://doi.org/10.1109/ICCIKE67021.2025.11318207)
 - Mansurova et al. (2025): [Data article](https://doi.org/10.3390/data10080119); [associated Zenodo dataset](https://doi.org/10.5281/zenodo.15769359)
+- Amogha et al. (2026): [Springer chapter](https://doi.org/10.1007/978-3-032-15404-0_19); abstract only reviewed
 - Aemmer et al. (2022): [Penn State publication record and DOI](https://pure.psu.edu/en/publications/measurement-and-classification-of-transit-delays-using-gtfs-rt-da/)
 - Brakewood et al. (2015): [paper DOI](https://doi.org/10.1016/j.trc.2015.01.021)
 - Tang and Thakuriah (2012): [paper DOI](https://doi.org/10.1016/j.trc.2012.01.001)

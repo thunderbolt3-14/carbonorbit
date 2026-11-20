@@ -7,11 +7,12 @@
 **Read:** Abstract and publication record reviewed; full paper wasn’t accessible from the linked source.
 
 - **Problem:** Buses on busy routes can lose their regular spacing and arrive close together, which harms service reliability.
-- **Data or study scope:** The study uses data from a busy bus route in Dublin and also examines an artificial route through simulation.
+- **Data:** The study uses data from a busy bus route in Dublin and also examines an artificial route through simulation.
 - **Method:** The authors predict bus headways (the time gaps between buses) and study whether holding buses at stops can reduce irregular gaps.
-- **Main findings:** The paper explores combining headway prediction with dynamic holding as a way to reduce bunching.
-- **Limitations:** The approach includes operational control—deciding to hold buses—which our project does not implement. Our project uses simulated GPS data, so we cannot claim that its results show what would happen on an actual bus route.
-- **Relevance to carbonOrbit:** It helps explain why headway gaps are useful for understanding bunching. Our project will detect and display bunching alerts rather than control bus movements.
+- **Metrics and key result:** The paper explores combining headway prediction with dynamic holding as a way to reduce bunching; the accessible abstract/record does not provide a single comparable detector score.
+- **Limitation or gap:** The approach includes operational control—deciding to hold buses—which our project does not implement. Our project uses simulated GPS data, so we cannot claim that its results show what would happen on an actual bus route. Full paper access was unavailable for this review.
+- **What carbonOrbit reuses:** It helps explain why headway gaps are useful for understanding bunching. Our project will detect and display bunching alerts rather than control bus movements.
+- **Questions an examiner could ask, with our answer:** **Does this paper validate our bunching detector?** No. It evaluates predictive control in Dublin and simulation; our detector must be tested against our own simulator labels.
 
 ## 2. Rezazada, Nassir, and Tanin (2022)
 
@@ -20,11 +21,12 @@
 **Read:** Conference paper PDF reviewed
 
 - **Problem:** The review examines bus bunching, its causes, how researchers model it, and strategies proposed to address it.
-- **Data or review scope:** This is a review of previous research, not a new GPS data collection study.
+- **Data:** This is a review of previous research, not a new GPS data collection study.
 - **Method:** The authors organize and discuss existing definitions, contributing factors, models, and control strategies.
-- **Main findings:** The review describes bunching as harmful to passengers and operators. It also points to areas that need more attention, including passenger-focused approaches and the way contributing factors vary over time and place.
-- **Limitations:** Because this is a review, its conclusions depend on the studies it covers. It does not validate our project’s detection method or simulated data.
-- **Relevance to carbonOrbit:** It supports explaining why bunching matters and why we should clearly state how our system defines and detects a bunching event.
+- **Metrics and key result:** The review describes bunching as harmful to passengers and operators. It also points to areas that need more attention, including passenger-focused approaches and the way contributing factors vary over time and place; no new model score is reported.
+- **Limitation or gap:** Because this is a review, its conclusions depend on the studies it covers. It does not validate our project’s detection method or simulated data.
+- **What carbonOrbit reuses:** It supports explaining why bunching matters and why we should clearly state how our system defines and detects a bunching event.
+- **Questions an examiner could ask, with our answer:** **Can a review supply ground-truth labels for our simulator?** No. It informs definitions and gaps, but our event labels must be generated independently and documented.
 
 ## 3. Rezazada, Nassir, Tanin, and Ceder (2024)
 
@@ -33,11 +35,12 @@
 **Read:** Open-access article page and available text reviewed
 
 - **Problem:** The review studies the causes and consequences of bus bunching and the strategies proposed to manage it.
-- **Data or review scope:** It reviews existing research from demand, supply, and decision-making perspectives.
+- **Data:** It reviews existing research from demand, supply, and decision-making perspectives.
 - **Method:** The authors classify and compare earlier studies and their bunching strategies.
-- **Main findings:** The review highlights that bunching reduces service reliability. It calls for more realistic evaluations and real-world applications, and discusses whether strategies focus on passengers, operators, or both.
-- **Limitations:** This article reviews other research; it does not test carbonOrbit or prove that our simulated alerts improve real bus services.
-- **Relevance to carbonOrbit:** It helps us explain the passenger and operational importance of bunching, and why our evaluation must clearly identify its simulated-data limits.
+- **Metrics and key result:** The review highlights that bunching reduces service reliability. It calls for more realistic evaluations and real-world applications, and discusses whether strategies focus on passengers, operators, or both; it reports no new detector score.
+- **Limitation or gap:** This article reviews other research; it does not test carbonOrbit or prove that our simulated alerts improve real bus services.
+- **What carbonOrbit reuses:** It helps us explain the passenger and operational importance of bunching, and why our evaluation must clearly identify its simulated-data limits.
+- **Questions an examiner could ask, with our answer:** **Does the review show our alerts improve service?** No. It synthesizes prior strategies and does not test our alerts or simulator.
 
 ## 4. Yang, Cheng, and Liu (2024)
 
@@ -46,8 +49,9 @@
 **Read:** Open-access article reviewed.
 
 - **Problem:** The article surveys proposed ways of addressing bus bunching in urban bus systems.
-- **Data or review scope:** This is a review of existing solution approaches, not a new field data collection study.
+- **Data:** This is a review of existing solution approaches, not a new field data collection study.
 - **Method:** The authors group and discuss approaches from previous research.
-- **Main findings:** The review describes bus bunching as an ongoing challenge and notes a gap in combining approaches from different directions.
-- **Limitations:** Since it is a review, it does not test our detection system or establish that a dashboard alone can prevent bunching.
-- **Relevance to carbonOrbit:** It helps us keep our project scope realistic: we will monitor and report bunching, not attempt to solve it with bus-control strategies.
+- **Metrics and key result:** The review describes bus bunching as an ongoing challenge and notes a gap in combining approaches from different directions; it does not report a new model score.
+- **Limitation or gap:** Since it is a review, it does not test our detection system or establish that a dashboard alone can prevent bunching.
+- **What carbonOrbit reuses:** It helps us keep our project scope realistic: we will monitor and report bunching, not attempt to solve it with bus-control strategies.
+- **Questions an examiner could ask, with our answer:** **Will a dashboard solve bus bunching?** No. Our scope is to detect and display events; operational control is outside the project.
