@@ -1,6 +1,6 @@
 # carbonOrbit: Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility
 
-**Final project report — current implementation and initial evaluation**
+**Final project report — corrected synthetic evaluation**
 
 **Report date:** 21 November 2026
 
@@ -12,7 +12,7 @@
 
 This project builds a reproducible pipeline for bus arrival-time estimation and delay/bunching alerts using three selected Bengaluru Metropolitan Transport Corporation (BMTC) routes as geographic and timetable context. The source is a pinned, community-maintained GTFS archive; it is not an official live feed. To evaluate the pipeline when observed BMTC vehicle positions are unavailable, the project generates seeded synthetic bus trajectories, observation noise, data dropout, and independent event labels. A chronological 18/5/5-day train/validation/test split is used to compare historical, moving-speed, Ridge, Random Forest, and Gradient Boosting ETA models.
 
-On the held-out synthetic test block, the validation-selected Random Forest achieved an ETA mean absolute error (MAE) of 0.2217 minutes and root mean squared error (RMSE) of 0.6452 minutes over 21,007 predictions. Its MAE was 75.1% lower than the historical-mean baseline and 26.2% lower than Ridge. At validation-selected thresholds, test event F1 was 0.755 for delay and 0.828 for bunching; the proposed 0.90 target was not met. A noisy-GPS perturbation increased ETA MAE to 0.2446 minutes, while high dropout produced 0.2236 minutes and reduced delay and bunching F1 to 0.694 and 0.640. These are results under the simulator’s assumptions and do not establish actual BMTC accuracy or prevalence. The emissions module is implemented as a separate scenario interface, but no compatible, project-approved factors or diversion observations were available; this report therefore makes no numerical emissions-reduction claim.
+On the held-out synthetic test block, the validation-selected Random Forest achieved an ETA mean absolute error (MAE) of 0.2217 minutes and root mean squared error (RMSE) of 0.6452 minutes over 21,007 predictions. Its MAE was 75.1% lower than the historical-mean baseline and 26.2% lower than Ridge. After correcting the event evaluation to use fixed truth labels and trip-level delay matching, delay detection reached F1 0.974. Bunching could not be evaluated because no positive validation or test events were generated under the frozen 50% headway rule. A noisy-GPS perturbation increased ETA MAE to 0.2446 minutes, while high dropout produced 0.2236 minutes. These are results under the simulator’s assumptions and do not establish actual BMTC accuracy or prevalence. The emissions module is implemented as a separate scenario interface, but no compatible, project-approved factors or diversion observations were available; this report therefore makes no numerical emissions-reduction claim.
 
 ## 1. Introduction
 
@@ -114,9 +114,9 @@ An early, invalid experiment used realized future segment duration in the speed 
 
 ### 5.4 Event definitions and scoring
 
-Delay and bunching are scored as separate event-detection tasks against simulator labels. The operating threshold is selected on validation event F1 and applied unchanged to test data. Delay uses a 3-minute threshold. Bunching uses an observed headway no more than 75% of scheduled headway; this was selected from the project sensitivity candidates for this run. Event onsets are matched one-to-one with a 30-second tolerance. The project does not define a finite set of negative event opportunities, so true negatives, specificity, and event accuracy are not reported.
+An implementation audit found that the original threshold sweep changed truth labels along with detector settings. This made F1 values across thresholds incomparable. The corrected implementation fixes truth at the predeclared rules (delay >=5 minutes; bunching <=50% of scheduled headway) and varies detector thresholds only. Delay events are matched by route, trip, and service date, consistent with their trip-level labels; bunching uses same-route/same-stop matching within 30 seconds. Threshold selection uses validation only; if validation has no positive truth events, the configured default is retained without claiming the detector was evaluated.
 
-The configured default bunching ratio of 50% yielded no positive test events or alerts; that score is uninformative. The 75% sensitivity threshold yielded 16 positive test events and is reported as the selected rule for this experiment, not a universal operational definition.
+Under the corrected protocol, the 50% bunching rule generated no positive events in validation or test, so the bunching task is unscorable on this run. No looser threshold is substituted as ground truth. The project also does not define a finite set of negative event opportunities, so true negatives, specificity, and event accuracy are not reported.
 
 ### 5.5 Robustness scenarios
 
@@ -148,26 +148,26 @@ There were 21,007 test predictions. The selected model’s MAE was 75.1% lower t
 
 | Event | Selected rule | Validation F1 | Test TP / FP / FN | Test precision | Test recall | Test F1 |
 |---|---|---:|---:|---:|---:|---:|
-| Delay | 3 minutes | 0.776 | 74 / 24 / 24 | 0.755 | 0.755 | 0.755 |
-| Bunching | 75% scheduled headway | 0.957 | 12 / 1 / 4 | 0.923 | 0.750 | 0.828 |
+| Delay | 3 minutes | 0.995 | 93 / 5 / 0 | 0.949 | 1.000 | 0.974 |
+| Bunching | 50% configured default (no validation positives) | not scorable | 0 / 0 / 0 | not scorable | not scorable | not scorable |
 
-Neither test F1 reaches the proposed 0.90 target. The high validation F1 for bunching did not carry over fully to test, and only 16 positive test events were available at the selected sensitivity threshold. Event metrics should therefore be interpreted with their counts and simulation definitions, not as established field detection rates.
+Delay detection exceeds the proposed 0.90 test F1 target on this synthetic split. Bunching performance cannot be assessed because there are no positive examples under the frozen truth rule. These results are simulator-dependent and are not field detection rates.
 
 ![Validation and test event threshold sensitivity](evidence/88d1eb4fc1efd6c1/event_threshold_sensitivity.png)
 
 ### 6.3 Robustness
 
-| Scenario | Test predictions | ETA MAE (min) | Delay F1 | Bunching F1 |
+| Scenario | Test predictions | ETA MAE (min) | Delay F1 at normal-selected 3-minute detector threshold | Bunching F1 |
 |---|---:|---:|---:|---:|
-| Normal | 21,007 | 0.2217 | 0.755 | 0.828 |
-| Noisy GPS (25 m std. dev.) | 21,007 | 0.2446 | 0.755 | 0.828 |
-| High dropout (15%) | 18,915 | 0.2236 | 0.694 | 0.640 |
+| Normal | 21,007 | 0.2217 | 0.974 | not scorable (0 truth events) |
+| Noisy GPS (25 m std. dev.) | 21,007 | 0.2446 | 0.974 | not scorable (0 truth events) |
+| High dropout (15%) | 18,915 | 0.2236 | 0.974 | not scorable (0 truth events) |
 
-The same model and thresholds selected on normal validation data were used across scenarios. The dropout scenario reduced the number of predictions and event F1, especially for bunching. These results only quantify the chosen simulated perturbations.
+The same model and thresholds selected on normal validation data were used across scenarios. Delay labels and alerts were matched by trip identity. Bunching remains unscorable because no positive truth events were generated. These results only quantify the chosen simulated perturbations.
 
 Route-level MAE uncertainty was estimated by resampling the five held-out days as clusters (10,000 bootstrap draws). The 95% intervals were 0.3664–0.7921 minutes for 285 BMSITY-YHKOT, 0.1915–0.2555 for 406, and 0.1529–0.1836 for 285-M KBS-BMSIT. These intervals reflect only day-to-day variation in this five-day simulated test block. Route/hour tables and visualizations are available in [`evidence/88d1eb4fc1efd6c1/`](evidence/88d1eb4fc1efd6c1/).
 
-Threshold sensitivity was reported without retuning the selected operating point: test delay F1 was 0.755, 0.785, and 0.885 at 3-, 5-, and 10-minute thresholds. Even 10 minutes remained below the 0.90 target. At the 50% bunching threshold, test data contained zero positive events and zero alerts; at 75%, F1 was 0.828. Only thresholds chosen from validation are used as selected test results; test sensitivity is descriptive.
+With the fixed 5-minute delay truth rule, descriptive test F1 was 0.974, 1.000, and 0.967 at detector thresholds of 3, 5, and 10 minutes. The 3-minute threshold was selected on validation; test sensitivity did not select the operating setting. Bunching test sensitivity is not interpretable because the frozen truth rule has zero positive cases.
 
 ### 6.4 Emissions
 
@@ -177,7 +177,7 @@ No numeric emissions result is available. Factor values and observed passenger d
 
 Within the corrected synthetic dataset, the tree-based candidates improve substantially on the historical baseline, and RandomForest is the best of the evaluated models under the recorded validation selection rule. This demonstrates that the pipeline can distinguish candidates under one deterministic simulator configuration. It does not establish that the model will perform similarly on real vehicle traces, under actual traffic conditions, or on other BMTC routes.
 
-Event detection is less conclusive than ETA scoring. The selected test F1 values are below the planned target, event counts are modest, and the bunching rule had to be selected from a sensitivity grid because the default 50% ratio produced no positives. Future work should improve label coverage and event definitions, report complete threshold curves, and test against independently collected real-time observations before operational interpretation.
+Event detection evidence is incomplete. Delay detection met the proposed test F1 target in the synthetic run, but the score is tied to the simulator's persistent trip delays and simple threshold logic. Bunching remains untested because the frozen rule produced no positive examples. Future work should add independently reviewed, operationally plausible bunching examples and evaluate against observed vehicle positions before operational interpretation.
 
 The error distribution also reflects route imbalance. One route provides most test examples, while another has only 431. A single aggregate metric can conceal route-specific differences; future comparisons should add route-balanced summaries and uncertainty intervals. The current report gives route subgroup MAE and counts but does not claim statistical precision from the synthetic sample alone.
 
@@ -196,7 +196,7 @@ The project’s broader sustainability motivation remains a hypothesis, not a me
 
 ## 9. Conclusion and next research steps
 
-The project has produced a reproducible synthetic evaluation workflow for ETA prediction and reliability-event detection on three selected BMTC route geometries. On the corrected held-out simulation, RandomForest achieved 0.2217-minute MAE over 21,007 predictions. Delay and bunching test F1 were 0.755 and 0.828, below the proposed 0.90 target. The pipeline and dashboard display generated data, not live bus operations. The evidence supports a software/simulation proof of concept only.
+The project has produced a reproducible synthetic evaluation workflow for ETA prediction and reliability-event detection on three selected BMTC route geometries. On the held-out simulation, RandomForest achieved 0.2217-minute MAE over 21,007 predictions. Corrected delay detection reached F1 0.974; bunching could not be evaluated because there were zero positive truth events under the frozen rule. The pipeline and dashboard display generated data, not live bus operations. The evidence supports a software/simulation proof of concept only.
 
 The next research steps are to obtain and document an authorized, stable BMTC GTFS source; collect or access real vehicle-position and schedule-adherence observations for independent validation; balance route coverage; predefine event negatives and evaluate thresholds on larger held-out samples; and separately validate any emissions factors and passenger-diversion assumptions before publishing scenario outputs. The evaluation should be rerun after those data and protocol changes, with the synthetic and observed results clearly separated.
 

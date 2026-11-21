@@ -269,16 +269,22 @@ def simulate(config: dict, scenario_name: str = "normal", output_root: str | Pat
     observed_bunching = _bunching_events(stop_observations, float(event_rules["bunching_headway_ratio"]), run_id, "detected")
     detected_delays = _delay_alerts(stop_observations, float(event_rules["delay_minutes"]), run_id)
     event_sensitivity = []
-    for threshold in sorted(set([float(event_rules["delay_minutes"]), *map(float, event_rules.get("delay_sensitivity_minutes", []))])):
-        for row in _delay_event_labels(stop_truth, threshold, run_id):
-            event_sensitivity.append({**row, "dataset": "truth", "threshold_type": "delay_minutes", "threshold_value": threshold})
+    # Keep the truth definition fixed at the predeclared rule while varying only
+    # the detector threshold. Otherwise each F1 score measures a different task.
+    delay_truth_threshold = float(event_rules["delay_minutes"])
+    delay_truth = _delay_event_labels(stop_truth, delay_truth_threshold, run_id)
+    for threshold in sorted(set([delay_truth_threshold, *map(float, event_rules.get("delay_sensitivity_minutes", []))])):
+        for row in delay_truth:
+            event_sensitivity.append({**row, "dataset": "truth", "threshold_type": "delay_minutes", "threshold_value": threshold, "truth_threshold_value": delay_truth_threshold})
         for row in _delay_alerts(stop_observations, threshold, run_id):
-            event_sensitivity.append({**row, "dataset": "detector", "threshold_type": "delay_minutes", "threshold_value": threshold})
-    for ratio in sorted(set([float(event_rules["bunching_headway_ratio"]), *map(float, event_rules.get("bunching_sensitivity_ratios", []))])):
-        for row in _bunching_events(stop_truth, ratio, run_id, "true"):
-            event_sensitivity.append({**row, "dataset": "truth", "threshold_type": "bunching_ratio", "threshold_value": ratio})
+            event_sensitivity.append({**row, "dataset": "detector", "threshold_type": "delay_minutes", "threshold_value": threshold, "truth_threshold_value": delay_truth_threshold})
+    bunching_truth_threshold = float(event_rules["bunching_headway_ratio"])
+    bunching_truth = _bunching_events(stop_truth, bunching_truth_threshold, run_id, "true")
+    for ratio in sorted(set([bunching_truth_threshold, *map(float, event_rules.get("bunching_sensitivity_ratios", []))])):
+        for row in bunching_truth:
+            event_sensitivity.append({**row, "dataset": "truth", "threshold_type": "bunching_ratio", "threshold_value": ratio, "truth_threshold_value": bunching_truth_threshold})
         for row in _bunching_events(stop_observations, ratio, run_id, "detected"):
-            event_sensitivity.append({**row, "dataset": "detector", "threshold_type": "bunching_ratio", "threshold_value": ratio})
+            event_sensitivity.append({**row, "dataset": "detector", "threshold_type": "bunching_ratio", "threshold_value": ratio, "truth_threshold_value": bunching_truth_threshold})
 
     root = Path(output_root) / run_id / scenario_name
     root.mkdir(parents=True, exist_ok=True)
@@ -289,7 +295,7 @@ def simulate(config: dict, scenario_name: str = "normal", output_root: str | Pat
         "stop_observations.csv": list(stop_observations[0]) if stop_observations else ["run_id"],
         "event_labels.csv": list((delay_labels + true_bunching)[0]) if delay_labels or true_bunching else ["event_id", "run_id", "event_type"],
         "detector_alerts.csv": list((detected_delays + observed_bunching)[0]) if detected_delays or observed_bunching else ["alert_id", "run_id", "alert_type"],
-        "event_sensitivity.csv": ["dataset", "threshold_type", "threshold_value", "event_id", "alert_id", "run_id", "event_type", "alert_type", "service_date", "route_id", "trip_id", "bus_id", "related_bus_id", "stop_id", "start_utc", "end_utc", "timestamp_utc", "severity", "rule_version", "message"],
+        "event_sensitivity.csv": ["dataset", "threshold_type", "threshold_value", "truth_threshold_value", "event_id", "alert_id", "run_id", "event_type", "alert_type", "service_date", "route_id", "trip_id", "bus_id", "related_bus_id", "stop_id", "start_utc", "end_utc", "timestamp_utc", "severity", "rule_version", "message"],
         "quality_log.csv": list(quality_log[0]) if quality_log else ["run_id", "service_date", "quality_event"],
     }
     outputs = {

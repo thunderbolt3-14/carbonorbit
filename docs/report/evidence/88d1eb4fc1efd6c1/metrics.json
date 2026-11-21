@@ -1,57 +1,61 @@
 {
   "event_threshold_selection": {
     "bunching": {
-      "selected_threshold": 0.75,
-      "selection_rule": "highest validation event F1; ties prefer the configured default, then the smaller threshold",
+      "selected_threshold": 0.5,
+      "selection_rule": "highest validation event F1 among settings with positive validation truth; ties prefer the configured default, then the smaller threshold; retain configured default if validation truth is empty",
       "test_metrics": {
-        "alerts": 13,
-        "f1": 0.8275862068965517,
-        "fn": 4,
-        "fp": 1,
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
+        "fp": 0,
+        "matching_method": "same route/stop within time tolerance",
         "matching_tolerance_seconds": 30,
-        "precision": 0.9230769230769231,
-        "recall": 0.75,
-        "tp": 12,
-        "true_events": 16
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
       },
       "threshold_type": "bunching_ratio",
       "validation_metrics": {
-        "alerts": 11,
-        "f1": 0.9565217391304348,
-        "fn": 1,
+        "alerts": 0,
+        "f1": 0.0,
+        "fn": 0,
         "fp": 0,
+        "matching_method": "same route/stop within time tolerance",
         "matching_tolerance_seconds": 30,
-        "precision": 1.0,
-        "recall": 0.9166666666666666,
-        "tp": 11,
-        "true_events": 12
+        "precision": 0.0,
+        "recall": 0.0,
+        "tp": 0,
+        "true_events": 0
       }
     },
     "delay": {
       "selected_threshold": 3.0,
-      "selection_rule": "highest validation event F1; ties prefer the configured default, then the smaller threshold",
+      "selection_rule": "highest validation event F1 among settings with positive validation truth; ties prefer the configured default, then the smaller threshold; retain configured default if validation truth is empty",
       "test_metrics": {
         "alerts": 98,
-        "f1": 0.7551020408163265,
-        "fn": 24,
-        "fp": 24,
-        "matching_tolerance_seconds": 30,
-        "precision": 0.7551020408163265,
-        "recall": 0.7551020408163265,
-        "tp": 74,
-        "true_events": 98
+        "f1": 0.9738219895287958,
+        "fn": 0,
+        "fp": 5,
+        "matching_method": "same route/trip/service date",
+        "matching_tolerance_seconds": null,
+        "precision": 0.9489795918367347,
+        "recall": 1.0,
+        "tp": 93,
+        "true_events": 93
       },
       "threshold_type": "delay_minutes",
       "validation_metrics": {
         "alerts": 98,
-        "f1": 0.7755102040816326,
-        "fn": 22,
-        "fp": 22,
-        "matching_tolerance_seconds": 30,
-        "precision": 0.7755102040816326,
-        "recall": 0.7755102040816326,
-        "tp": 76,
-        "true_events": 98
+        "f1": 0.9948717948717948,
+        "fn": 0,
+        "fp": 1,
+        "matching_method": "same route/trip/service date",
+        "matching_tolerance_seconds": null,
+        "precision": 0.9897959183673469,
+        "recall": 1.0,
+        "tp": 97,
+        "true_events": 97
       }
     }
   },
@@ -61,6 +65,7 @@
       "f1": 0.0,
       "fn": 0,
       "fp": 0,
+      "matching_method": "same route/stop within time tolerance",
       "matching_tolerance_seconds": 30,
       "precision": 0.0,
       "recall": 0.0,
@@ -72,6 +77,7 @@
       "f1": 0.0,
       "fn": 0,
       "fp": 0,
+      "matching_method": "same route/stop within time tolerance",
       "matching_tolerance_seconds": 30,
       "precision": 0.0,
       "recall": 0.0,
@@ -80,46 +86,50 @@
     },
     "bunching_ratio=0.75": {
       "alerts": 13,
-      "f1": 0.8275862068965517,
-      "fn": 4,
-      "fp": 1,
+      "f1": 0.0,
+      "fn": 0,
+      "fp": 13,
+      "matching_method": "same route/stop within time tolerance",
       "matching_tolerance_seconds": 30,
-      "precision": 0.9230769230769231,
-      "recall": 0.75,
-      "tp": 12,
-      "true_events": 16
+      "precision": 0.0,
+      "recall": 0.0,
+      "tp": 0,
+      "true_events": 0
     },
     "delay_minutes=10": {
       "alerts": 87,
-      "f1": 0.8850574712643678,
-      "fn": 10,
-      "fp": 10,
-      "matching_tolerance_seconds": 30,
-      "precision": 0.8850574712643678,
-      "recall": 0.8850574712643678,
-      "tp": 77,
-      "true_events": 87
+      "f1": 0.9666666666666666,
+      "fn": 6,
+      "fp": 0,
+      "matching_method": "same route/trip/service date",
+      "matching_tolerance_seconds": null,
+      "precision": 1.0,
+      "recall": 0.9354838709677419,
+      "tp": 87,
+      "true_events": 93
     },
     "delay_minutes=3": {
       "alerts": 98,
-      "f1": 0.7551020408163265,
-      "fn": 24,
-      "fp": 24,
-      "matching_tolerance_seconds": 30,
-      "precision": 0.7551020408163265,
-      "recall": 0.7551020408163265,
-      "tp": 74,
-      "true_events": 98
+      "f1": 0.9738219895287958,
+      "fn": 0,
+      "fp": 5,
+      "matching_method": "same route/trip/service date",
+      "matching_tolerance_seconds": null,
+      "precision": 0.9489795918367347,
+      "recall": 1.0,
+      "tp": 93,
+      "true_events": 93
     },
     "delay_minutes=5": {
       "alerts": 93,
-      "f1": 0.7849462365591398,
-      "fn": 20,
-      "fp": 20,
-      "matching_tolerance_seconds": 30,
-      "precision": 0.7849462365591398,
-      "recall": 0.7849462365591398,
-      "tp": 73,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "matching_method": "same route/trip/service date",
+      "matching_tolerance_seconds": null,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tp": 93,
       "true_events": 93
     }
   },
@@ -129,6 +139,7 @@
       "f1": 0.0,
       "fn": 0,
       "fp": 0,
+      "matching_method": "same route/stop within time tolerance",
       "matching_tolerance_seconds": 30,
       "precision": 0.0,
       "recall": 0.0,
@@ -137,13 +148,14 @@
     },
     "delay": {
       "alerts": 93,
-      "f1": 0.7849462365591398,
-      "fn": 20,
-      "fp": 20,
-      "matching_tolerance_seconds": 30,
-      "precision": 0.7849462365591398,
-      "recall": 0.7849462365591398,
-      "tp": 73,
+      "f1": 1.0,
+      "fn": 0,
+      "fp": 0,
+      "matching_method": "same route/trip/service date",
+      "matching_tolerance_seconds": null,
+      "precision": 1.0,
+      "recall": 1.0,
+      "tp": 93,
       "true_events": 93
     }
   },
@@ -225,15 +237,15 @@
       "RandomForest": {
         "count": 21007,
         "mae_min": 0.22171649081459655,
-        "median_absolute_error_min": 0.10336372697391472,
+        "median_absolute_error_min": 0.1033637269739136,
         "p90_absolute_error_min": 0.4113792127216767,
         "rmse_min": 0.6451723541676884,
         "within_2min_pct": 98.86228400057124
       },
       "Ridge": {
         "count": 21007,
-        "mae_min": 0.3004629349836029,
-        "median_absolute_error_min": 0.1447891570709512,
+        "mae_min": 0.30046293498360277,
+        "median_absolute_error_min": 0.14478915707095075,
         "p90_absolute_error_min": 0.5326422035657651,
         "rmse_min": 0.7827532707252414,
         "within_2min_pct": 98.52430142333507
@@ -245,15 +257,15 @@
         "10": {
           "count": 1409,
           "mae_min": 0.2623685864706113,
-          "median_absolute_error_min": 0.10543672554300798,
-          "p90_absolute_error_min": 0.49041734915338636,
+          "median_absolute_error_min": 0.10543672554300754,
+          "p90_absolute_error_min": 0.4904173491533862,
           "rmse_min": 0.7254360341616226,
           "within_2min_pct": 98.22569198012775
         },
         "11": {
           "count": 1508,
-          "mae_min": 0.16506552164878188,
-          "median_absolute_error_min": 0.09780581875859307,
+          "mae_min": 0.16506552164878185,
+          "median_absolute_error_min": 0.0978058187585934,
           "p90_absolute_error_min": 0.40757028031402553,
           "rmse_min": 0.26074512823585405,
           "within_2min_pct": 99.93368700265252
@@ -262,22 +274,22 @@
           "count": 1755,
           "mae_min": 0.27021656048604425,
           "median_absolute_error_min": 0.09795908032636813,
-          "p90_absolute_error_min": 0.3978328975518215,
+          "p90_absolute_error_min": 0.3978328975518214,
           "rmse_min": 0.9999143022888791,
           "within_2min_pct": 98.23361823361823
         },
         "13": {
           "count": 999,
           "mae_min": 0.16140731469032782,
-          "median_absolute_error_min": 0.09806533140044327,
+          "median_absolute_error_min": 0.09806533140044305,
           "p90_absolute_error_min": 0.3412806314822837,
-          "rmse_min": 0.2892914010780605,
+          "rmse_min": 0.28929140107806056,
           "within_2min_pct": 99.69969969969969
         },
         "14": {
           "count": 1443,
           "mae_min": 0.14881322094231555,
-          "median_absolute_error_min": 0.08997557430294822,
+          "median_absolute_error_min": 0.08997557430295,
           "p90_absolute_error_min": 0.34404010865076606,
           "rmse_min": 0.22829016687172066,
           "within_2min_pct": 99.93069993069993
@@ -285,72 +297,72 @@
         "15": {
           "count": 1943,
           "mae_min": 0.21262531720955968,
-          "median_absolute_error_min": 0.10986304868431684,
-          "p90_absolute_error_min": 0.39509359633594904,
-          "rmse_min": 0.48857709399809474,
+          "median_absolute_error_min": 0.10986304868431773,
+          "p90_absolute_error_min": 0.395093596335949,
+          "rmse_min": 0.4885770939980948,
           "within_2min_pct": 98.8677303139475
         },
         "16": {
           "count": 1899,
-          "mae_min": 0.3259754490305419,
+          "mae_min": 0.325975449030542,
           "median_absolute_error_min": 0.1258066571840326,
-          "p90_absolute_error_min": 0.5684905812422626,
+          "p90_absolute_error_min": 0.5684905812422625,
           "rmse_min": 0.9353240722859055,
           "within_2min_pct": 97.6303317535545
         },
         "17": {
           "count": 1645,
           "mae_min": 0.14486665765494786,
-          "median_absolute_error_min": 0.09441278280932086,
-          "p90_absolute_error_min": 0.3472214262453024,
-          "rmse_min": 0.2087885022136061,
+          "median_absolute_error_min": 0.09441278280932042,
+          "p90_absolute_error_min": 0.34722142624530256,
+          "rmse_min": 0.20878850221360604,
           "within_2min_pct": 100.0
         },
         "18": {
           "count": 936,
-          "mae_min": 0.2794349451877697,
+          "mae_min": 0.2794349451877696,
           "median_absolute_error_min": 0.09797308299771212,
-          "p90_absolute_error_min": 0.4294512640123971,
-          "rmse_min": 0.9687467895398533,
+          "p90_absolute_error_min": 0.4294512640123975,
+          "rmse_min": 0.9687467895398534,
           "within_2min_pct": 97.97008547008546
         },
         "19": {
           "count": 346,
-          "mae_min": 0.2333051378242774,
-          "median_absolute_error_min": 0.16538004420470975,
+          "mae_min": 0.23330513782427742,
+          "median_absolute_error_min": 0.1653800442047093,
           "p90_absolute_error_min": 0.5442892575900197,
           "rmse_min": 0.3258488881699732,
           "within_2min_pct": 100.0
         },
         "6": {
           "count": 637,
-          "mae_min": 0.1510436752232765,
+          "mae_min": 0.15104367522327647,
           "median_absolute_error_min": 0.08808789272647388,
-          "p90_absolute_error_min": 0.35036840885700077,
+          "p90_absolute_error_min": 0.35036840885700055,
           "rmse_min": 0.24326151783731953,
           "within_2min_pct": 100.0
         },
         "7": {
           "count": 1678,
-          "mae_min": 0.24609315201402426,
-          "median_absolute_error_min": 0.10173077397710287,
-          "p90_absolute_error_min": 0.4518690539163435,
-          "rmse_min": 0.641113868526339,
+          "mae_min": 0.24609315201402424,
+          "median_absolute_error_min": 0.10173077397710265,
+          "p90_absolute_error_min": 0.45186905391634336,
+          "rmse_min": 0.6411138685263389,
           "within_2min_pct": 97.85458879618594
         },
         "8": {
           "count": 3062,
-          "mae_min": 0.19168059612913727,
-          "median_absolute_error_min": 0.09798878926297613,
-          "p90_absolute_error_min": 0.3534943677589453,
-          "rmse_min": 0.5179387806503927,
+          "mae_min": 0.19168059612913724,
+          "median_absolute_error_min": 0.09798878926297619,
+          "p90_absolute_error_min": 0.35349436775894494,
+          "rmse_min": 0.5179387806503926,
           "within_2min_pct": 99.1508817766166
         },
         "9": {
           "count": 1747,
           "mae_min": 0.274736637603707,
           "median_absolute_error_min": 0.11620617441954084,
-          "p90_absolute_error_min": 0.4588882651847418,
+          "p90_absolute_error_min": 0.458888265184742,
           "rmse_min": 0.8711478071501894,
           "within_2min_pct": 98.28277046365197
         }
@@ -367,7 +379,7 @@
         "BMTC:b202977c0fc0": {
           "count": 17831,
           "mae_min": 0.2219697559598602,
-          "median_absolute_error_min": 0.10150185855038951,
+          "median_absolute_error_min": 0.10150185855038973,
           "p90_absolute_error_min": 0.40708756591122763,
           "rmse_min": 0.6691734430498616,
           "within_2min_pct": 98.88396612640906
@@ -376,7 +388,7 @@
           "count": 2745,
           "mae_min": 0.1637454368120435,
           "median_absolute_error_min": 0.10167630935018579,
-          "p90_absolute_error_min": 0.3476965940235549,
+          "p90_absolute_error_min": 0.34769659402355485,
           "rmse_min": 0.2902352780915433,
           "within_2min_pct": 99.672131147541
         }
@@ -411,16 +423,16 @@
     "RandomForest": {
       "count": 20702,
       "mae_min": 0.21995853851216182,
-      "median_absolute_error_min": 0.10636721079663924,
-      "p90_absolute_error_min": 0.4182829979193892,
+      "median_absolute_error_min": 0.10636721079663913,
+      "p90_absolute_error_min": 0.41828299791938967,
       "rmse_min": 0.6176968825671835,
       "within_2min_pct": 99.00492706018741
     },
     "Ridge": {
       "count": 20702,
-      "mae_min": 0.29205986128151784,
-      "median_absolute_error_min": 0.14578485627932286,
-      "p90_absolute_error_min": 0.5346128237915566,
+      "mae_min": 0.2920598612815179,
+      "median_absolute_error_min": 0.1457848562793232,
+      "p90_absolute_error_min": 0.5346128237915567,
       "rmse_min": 0.7359779539449369,
       "within_2min_pct": 98.60883006472805
     }

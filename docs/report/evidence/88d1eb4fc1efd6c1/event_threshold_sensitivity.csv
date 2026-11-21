@@ -1,11 +1,13 @@
-event_type,threshold_type,threshold_value,split,selected_on_validation,true_events,alerts,tp,fp,fn,precision,recall,f1,matching_tolerance_seconds
-bunching,bunching_ratio,0.5,test,False,0,0,0,0,0,0.0,0.0,0.0,30
-bunching,bunching_ratio,0.5,validation,False,0,0,0,0,0,0.0,0.0,0.0,30
-bunching,bunching_ratio,0.75,test,False,16,13,12,1,4,0.9230769230769231,0.75,0.8275862068965517,30
-bunching,bunching_ratio,0.75,validation,True,12,11,11,0,1,1.0,0.9166666666666666,0.9565217391304348,30
-delay,delay_minutes,3.0,test,False,98,98,74,24,24,0.7551020408163265,0.7551020408163265,0.7551020408163265,30
-delay,delay_minutes,3.0,validation,True,98,98,76,22,22,0.7755102040816326,0.7755102040816326,0.7755102040816326,30
-delay,delay_minutes,5.0,test,False,93,93,73,20,20,0.7849462365591398,0.7849462365591398,0.7849462365591398,30
-delay,delay_minutes,5.0,validation,False,97,96,68,28,29,0.7083333333333334,0.7010309278350515,0.7046632124352332,30
-delay,delay_minutes,10.0,test,False,87,87,77,10,10,0.8850574712643678,0.8850574712643678,0.8850574712643678,30
-delay,delay_minutes,10.0,validation,False,88,88,64,24,24,0.7272727272727273,0.7272727272727273,0.7272727272727273,30
+event_type,threshold_type,threshold_value,split,selected_on_validation,true_events,alerts,tp,fp,fn,precision,recall,f1,matching_method,matching_tolerance_seconds
+bunching,bunching_ratio,0.33,test,False,0,0,0,0,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+bunching,bunching_ratio,0.33,validation,False,0,0,0,0,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+bunching,bunching_ratio,0.5,test,False,0,0,0,0,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+bunching,bunching_ratio,0.5,validation,True,0,0,0,0,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+bunching,bunching_ratio,0.75,test,False,0,13,0,13,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+bunching,bunching_ratio,0.75,validation,False,0,11,0,11,0,0.0,0.0,0.0,same route/stop within time tolerance,30.0
+delay,delay_minutes,3.0,test,False,93,98,93,5,0,0.9489795918367347,1.0,0.9738219895287958,same route/trip/service date,
+delay,delay_minutes,3.0,validation,True,97,98,97,1,0,0.9897959183673469,1.0,0.9948717948717948,same route/trip/service date,
+delay,delay_minutes,5.0,test,False,93,93,93,0,0,1.0,1.0,1.0,same route/trip/service date,
+delay,delay_minutes,5.0,validation,False,97,96,96,0,1,1.0,0.9896907216494846,0.9948186528497409,same route/trip/service date,
+delay,delay_minutes,10.0,test,False,93,87,87,0,6,1.0,0.9354838709677419,0.9666666666666666,same route/trip/service date,
+delay,delay_minutes,10.0,validation,False,97,88,88,0,9,1.0,0.9072164948453608,0.9513513513513514,same route/trip/service date,
