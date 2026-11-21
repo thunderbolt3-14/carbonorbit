@@ -60,9 +60,11 @@ evaluation artifacts only; they do not connect to live BMTC vehicles.
 - tests/ and scripts/ : automated tests and run scripts
 
 ## Status
-Phase 0 and the Phase 1 research-document set are complete. The team-approved
-evaluation plan and system contracts are recorded in `docs/`. Initial synthetic
-results and robustness outputs are summarized in `docs/simulation_results.md`.
-The run does not establish live BMTC performance. Emissions factor values remain
-unset until compatible sources are recorded. Run evidence and figures are in
-`docs/report/evidence/`; see `docs/phase_roadmap.md` for team review gates.
+Phases 0–4 are complete for the current synthetic proof of concept. The
+evaluation and regression suite passed (34 tests); the normal/noisy-GPS/high-
+dropout run is reproducible. Event F1 did not meet the proposed 0.90 target
+(delay 0.755, bunching 0.828), and this shortfall is reported without tuning on
+test data. Results do not establish live BMTC performance. Emissions remain
+unquantified because compatible factors and observed passenger diversion are
+unavailable. See `docs/phase_roadmap.md` for remaining Phase 5–6 work and
+`docs/report/evidence/` for compact run artifacts.
