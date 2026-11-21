@@ -131,6 +131,10 @@ The simulator/data owner must define ground-truth event rules before detection t
 
 The proposed numeric event rules and H4 F1 target require team review before freeze. Report event metrics on the same held-out test service days as ETA metrics; use validation only for threshold selection. The F1 target is meaningful only if labels are generated independently of the detector and there are enough positive events in the held-out days. If not, report the limitation and counts rather than implying strong validation.
 
+### Dated correction — 21 November 2026
+
+An implementation audit found that the original sensitivity sweep regenerated both truth labels and detector alerts at each candidate threshold. That made F1 values across thresholds incomparable and could select a detector against a moving event definition. The implementation now fixes truth labels at the configured rules (delay >=5 minutes; bunching <=50% of scheduled headway) and varies only the detector threshold. Validation selection uses this fixed truth; test rows are descriptive only. If validation contains no positive events, the configured default is retained and the result is treated as uninformative rather than optimizing an all-negative score. Existing pre-correction event sensitivity values and selected thresholds must not be cited; regenerate them with the corrected implementation. The frozen label definitions are unchanged.
+
 ## 8. Emissions scenario method (Rahul Velpuri)
 
 The emissions component is a scenario calculator, not an observed impact measurement. Keep the ETA-model evaluation separate from the emissions calculation: better information may support a modal-shift scenario, but the project does not directly measure that travelers changed modes.

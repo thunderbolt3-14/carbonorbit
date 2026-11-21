@@ -61,10 +61,12 @@ evaluation artifacts only; they do not connect to live BMTC vehicles.
 
 ## Status
 Phases 0–4 are complete for the current synthetic proof of concept. The
-evaluation and regression suite passed (34 tests); the normal/noisy-GPS/high-
-dropout run is reproducible. Event F1 did not meet the proposed 0.90 target
-(delay 0.755, bunching 0.828), and this shortfall is reported without tuning on
-test data. Results do not establish live BMTC performance. Emissions remain
-unquantified because compatible factors and observed passenger diversion are
-unavailable. See `docs/phase_roadmap.md` for remaining Phase 5–6 work and
+evaluation and regression suite passed (34 tests) on the preceding reviewed
+implementation; the corrected normal/noisy-GPS/high-dropout run is reproducible.
+After correcting event scoring, delay detection reached test F1 0.974 against
+fixed 5-minute truth using validation-selected settings. Bunching could not be
+scored because the configured truth rule produced no positive events. These
+results do not establish live BMTC performance. Emissions remain unquantified
+because compatible factors and observed passenger diversion are unavailable.
+See `docs/phase_roadmap.md` for remaining Phase 5–6 work and
 `docs/report/evidence/` for compact run artifacts.

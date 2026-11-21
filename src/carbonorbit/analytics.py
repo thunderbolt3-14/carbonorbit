@@ -122,14 +122,23 @@ def _event_match_metrics(labels: pd.DataFrame, alerts: pd.DataFrame, event_type:
         for ti, event in enumerate(truth):
             if alert.get("route_id") != event.get("route_id"):
                 continue
-            if event_type == "bunching" and alert.get("stop_id") and event.get("stop_id") and alert.get("stop_id") != event.get("stop_id"):
-                continue
             a = alert.get("timestamp_utc") or alert.get("start_utc")
             b = event.get("start_utc")
             if not a or not b:
                 continue
             delta = abs((pd.Timestamp(a) - pd.Timestamp(b)).total_seconds())
-            if delta <= tolerance_seconds:
+            if event_type == "delay":
+                # Delay labels and alerts are one event per trip. The alert may
+                # cross its chosen threshold at a later stop than the fixed
+                # truth rule, so trip identity is the correct event match.
+                same_trip = alert.get("trip_id") == event.get("trip_id")
+                same_day = alert.get("service_date") == event.get("service_date")
+                if same_trip and same_day:
+                    candidates.append((delta, pi, ti))
+            elif (
+                delta <= tolerance_seconds
+                and (not alert.get("stop_id") or not event.get("stop_id") or alert.get("stop_id") == event.get("stop_id"))
+            ):
                 candidates.append((delta, pi, ti))
     matched_alerts, matched_events = set(), set()
     for _, pi, ti in sorted(candidates):
@@ -142,7 +151,7 @@ def _event_match_metrics(labels: pd.DataFrame, alerts: pd.DataFrame, event_type:
     precision = tp / (tp + fp) if tp + fp else 0.0
     recall = tp / (tp + fn) if tp + fn else 0.0
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
-    return {"true_events": len(truth), "alerts": len(predicted), "tp": tp, "fp": fp, "fn": fn, "precision": precision, "recall": recall, "f1": f1, "matching_tolerance_seconds": tolerance_seconds}
+    return {"true_events": len(truth), "alerts": len(predicted), "tp": tp, "fp": fp, "fn": fn, "precision": precision, "recall": recall, "f1": f1, "matching_method": "same route/trip/service date" if event_type == "delay" else "same route/stop within time tolerance", "matching_tolerance_seconds": None if event_type == "delay" else tolerance_seconds}
 
 
 def _sensitivity_event_metrics(rows: pd.DataFrame, test_days: set[str], threshold_values: dict | None = None) -> dict:
@@ -172,9 +181,16 @@ def _select_event_threshold(validation_results: dict, threshold_type: str, defau
             value = float(key[len(prefix):])
             # Maximize validation F1; ties prefer the predeclared default, then
             # the numerically smaller threshold for deterministic selection.
-            candidates.append((-float(result["f1"]), abs(value - default_value), value, key))
+            # With no positive validation truth, F1 cannot distinguish detector
+            # settings. Preserve the predeclared threshold instead of selecting
+            # the setting that merely emits the fewest alerts.
+            if int(result.get("true_events", 0)) > 0:
+                candidates.append((-float(result["f1"]), abs(value - default_value), value, key))
     if not candidates:
-        raise ValueError(f"No validation sensitivity results for {threshold_type}")
+        default_key = f"{threshold_type}={float(default_value):g}"
+        if default_key not in validation_results:
+            raise ValueError(f"No validation sensitivity results for {threshold_type}")
+        return float(default_value), default_key
     _, _, value, key = min(candidates)
     return value, key
 
@@ -279,7 +295,7 @@ def evaluate_run(run_dir: str | Path, output_dir: str | Path = "results/generate
             "selected_threshold": selected_value,
             "validation_metrics": validation_sensitivity[result_key],
             "test_metrics": test_sensitivity.get(result_key, {}),
-            "selection_rule": "highest validation event F1; ties prefer the configured default, then the smaller threshold",
+            "selection_rule": "highest validation event F1 among settings with positive validation truth; ties prefer the configured default, then the smaller threshold; retain configured default if validation truth is empty",
         }
     metrics = {
         "run_id": json.loads((run_path / "manifest.json").read_text(encoding="utf-8")).get("run_id", run_path.name),
