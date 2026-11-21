@@ -44,7 +44,7 @@ The test command should report 34 passing tests for the current baseline. The sy
 python scripts/carbonorbit.py serve --host 127.0.0.1 --port 5000
 ```
 
-Then open `http://127.0.0.1:5000/` in a browser. Stop the server with `Ctrl+C` in the Git Bash window. The dashboard identifies the data as simulated; it does not connect to live BMTC vehicles.
+Then open `http://127.0.0.1:5000/` in a browser. Stop the server with `Ctrl+C` in the Git Bash window. The dashboard opens in independent GTFS-Realtime mode; click **Simulator** to view stored synthetic artifacts. The community feed is not official BMTC data and may be empty or unavailable. The live mode must not be used as evidence of BMTC operational accuracy; see `docs/data_sources.md` for source and verification status.
 
 On native PowerShell, use `py -3.12 -m venv venv`, `venv\\Scripts\\Activate.ps1`, `Invoke-WebRequest` for the URL above, and `(Get-FileHash data/raw/bmtc.zip -Algorithm SHA256).Hash` to check the archive against the recorded hash. The simulator also checks the pinned input hash.
 

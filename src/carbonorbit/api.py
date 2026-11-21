@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 
 from flask import Flask, g, jsonify, request, send_from_directory
+import requests
 
 from .db import connect, latest_run_id
 from .emissions import ScenarioInputError, calculate_scenario
@@ -22,6 +24,7 @@ def create_app(database: str | Path = "data/carbonorbit.db", dashboard_dir: str 
     if not dashboard_path.is_absolute():
         dashboard_path = Path(__file__).resolve().parents[2] / dashboard_path
     app.config["DASHBOARD_DIR"] = str(dashboard_path.resolve())
+    app.config["LIVE_FEED_BASE_URL"] = "https://maps.reclaim.city/bengaluru/rt"
 
     def db() -> sqlite3.Connection:
         if "database" not in g:
@@ -42,6 +45,100 @@ def create_app(database: str | Path = "data/carbonorbit.db", dashboard_dir: str 
     @app.get("/api/v1/ping")
     def ping():
         return jsonify({"ok": True, "service": "carbonOrbit", "version": "v1"})
+
+    @app.get("/api/v1/live")
+    def live_feed():
+        """Proxy the independent Bengaluru GTFS-Realtime feed and report freshness."""
+        base = app.config["LIVE_FEED_BASE_URL"].rstrip("/")
+        try:
+            status_response = requests.get(f"{base}/status.json", timeout=(3, 8))
+            status_response.raise_for_status()
+            feed_status = status_response.json()
+            positions_response = requests.get(f"{base}/vehicle_positions.json", timeout=(3, 8))
+            positions_response.raise_for_status()
+            feed = positions_response.json()
+            updates_response = requests.get(f"{base}/trip_updates.json", timeout=(3, 8))
+            updates_response.raise_for_status()
+            updates_feed = updates_response.json()
+        except (requests.RequestException, ValueError) as exc:
+            return jsonify({
+                "source": "Independent GTFS-Realtime mirror (not an official BMTC feed)",
+                "official": False,
+                "error": "live_feed_unavailable",
+                "message": str(exc),
+                "buses": [],
+            }), 502
+
+        header = feed.get("header") or {}
+        feed_timestamp = header.get("timestamp") or feed_status.get("feed_time")
+        try:
+            feed_epoch = int(feed_timestamp) if feed_timestamp is not None else None
+            age_seconds = max(0, int(datetime.now(timezone.utc).timestamp()) - feed_epoch) if feed_epoch is not None else None
+            feed_time_utc = datetime.fromtimestamp(feed_epoch, timezone.utc).isoformat().replace("+00:00", "Z") if feed_epoch is not None else None
+        except (TypeError, ValueError, OSError):
+            age_seconds, feed_time_utc = None, None
+
+        buses = []
+        for entity in feed.get("entity", []):
+            vehicle = entity.get("vehicle") or {}
+            position = vehicle.get("position") or {}
+            trip = vehicle.get("trip") or {}
+            if position.get("latitude") is None or position.get("longitude") is None:
+                continue
+            buses.append({
+                "bus_id": (vehicle.get("vehicle") or {}).get("id") or entity.get("id"),
+                "route_id": trip.get("routeId"),
+                "trip_id": trip.get("tripId"),
+                "lat": position["latitude"],
+                "lon": position["longitude"],
+                "bearing": position.get("bearing"),
+                "speed_mps": position.get("speed"),
+                "timestamp_utc": feed_time_utc,
+                "next_stop_id": vehicle.get("stopId"),
+                "current_status": vehicle.get("currentStatus"),
+            })
+        buses.sort(key=lambda bus: (bus.get("route_id") or "", bus.get("bus_id") or ""))
+        predictions = []
+        now_epoch = int(datetime.now(timezone.utc).timestamp())
+        for entity in updates_feed.get("entity", []):
+            update = entity.get("tripUpdate") or {}
+            trip = update.get("trip") or {}
+            vehicle = update.get("vehicle") or {}
+            bus_id = (vehicle.get("id") if isinstance(vehicle, dict) else None) or trip.get("tripId") or entity.get("id")
+            for stop_update in update.get("stopTimeUpdate", []):
+                stop_id = stop_update.get("stopId")
+                arrival = stop_update.get("arrival") or {}
+                departure = stop_update.get("departure") or {}
+                predicted_epoch = arrival.get("time") or departure.get("time")
+                if predicted_epoch is None:
+                    continue
+                try:
+                    eta_min = (int(predicted_epoch) - now_epoch) / 60
+                except (TypeError, ValueError):
+                    continue
+                if eta_min < -2:
+                    continue
+                predictions.append({
+                    "bus_id": bus_id,
+                    "route_id": trip.get("routeId"),
+                    "trip_id": trip.get("tripId"),
+                    "target_stop_id": stop_id,
+                    "predicted_eta_min": max(0, round(eta_min, 1)),
+                    "arrival_time_utc": datetime.fromtimestamp(int(predicted_epoch), timezone.utc).isoformat().replace("+00:00", "Z"),
+                })
+        predictions.sort(key=lambda row: (row["predicted_eta_min"], row.get("route_id") or ""))
+        return jsonify({
+            "source": "Independent GTFS-Realtime mirror (not an official BMTC feed)",
+            "official": False,
+            "network": feed_status.get("network", "bengaluru"),
+            "feed_time_utc": feed_time_utc,
+            "feed_age_seconds": age_seconds,
+            "stale": age_seconds is None or age_seconds > 120,
+            "reported_vehicle_count": feed_status.get("vehicles"),
+            "reported_trip_update_count": feed_status.get("trip_updates"),
+            "buses": buses,
+            "predictions": predictions,
+        })
 
     @app.get("/api/v1/buses")
     def buses():

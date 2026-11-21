@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>carbonOrbit | Simulated Transit Monitor</title>
+  <title>carbonOrbit | Bus Monitor</title>
   <style>
     :root { color-scheme: light; --ink:#172536; --muted:#64748b; --line:#d9e2ec; --panel:#fff; --bg:#f2f6fa; --teal:#087f8c; --amber:#b45309; --red:#b42318; }
     * { box-sizing:border-box; }
@@ -32,24 +32,26 @@
 <body>
   <header>
     <div><h1>carbonOrbit</h1><small>Bus tracking, ETA and service reliability</small></div>
-    <span class="badge">SIMULATED DATA · NOT LIVE BMTC</span>
+    <span class="badge" id="data-badge">LIVE FEED · INDEPENDENT SOURCE</span>
   </header>
   <main>
     <div class="controls">
       <label>Route<select id="route"><option value="">All routes</option></select></label>
+      <button id="live-mode" type="button">Live feed</button>
+      <button id="sim-mode" type="button">Simulator</button>
       <button id="refresh">Refresh now</button>
       <span id="status">Connecting…</span>
     </div>
     <div class="grid">
       <section class="panel">
-        <h2>Simulated route positions</h2><p class="sub">Positions show the latest stored ping for each bus in the selected run.</p>
-        <svg id="map" class="map" viewBox="0 0 1000 500" role="img" aria-label="Diagram of simulated bus positions"></svg>
+        <h2 id="positions-title">Live bus positions</h2><p class="sub" id="positions-sub">Live positions from an independent GTFS-Realtime feed. Not an official BMTC service.</p>
+        <svg id="map" class="map" viewBox="0 0 1000 500" role="img" aria-label="Bus positions"></svg>
       </section>
       <section class="panel">
-        <h2>Run summary</h2><p class="sub" id="run-id">No run loaded</p>
+        <h2 id="summary-title">Live feed status</h2><p class="sub" id="run-id">No feed loaded</p>
         <div class="kpis">
-          <div class="kpi"><span>Simulated buses</span><b id="bus-count">—</b></div>
-          <div class="kpi"><span>Current alerts</span><b id="alert-count">—</b></div>
+          <div class="kpi"><span id="bus-label">Live buses in feed</span><b id="bus-count">—</b></div>
+          <div class="kpi"><span id="alert-label">Live feed alerts</span><b id="alert-count">—</b></div>
           <div class="kpi"><span>ETA MAE (test)</span><b id="eta-mae">—</b></div>
           <div class="kpi"><span>Selected model</span><b id="model-name" style="font-size:15px">—</b></div>
         </div>
@@ -70,7 +72,7 @@
     const escapeHtml = function(s) { return String(s ?? "").replace(/[&<>"']/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]; }); };
     function drawBuses(buses) {
       const svg=$("map"); svg.replaceChildren();
-      if(!buses.length) { svg.innerHTML='<text x="500" y="250" text-anchor="middle" fill="#64748b">No simulated bus positions in this run</text>'; return; }
+      if(!buses.length) { svg.innerHTML='<text x="500" y="250" text-anchor="middle" fill="#64748b">No bus positions are currently available</text>'; return; }
       const lats=buses.map(function(x){return Number(x.lat);}), lons=buses.map(function(x){return Number(x.lon);});
       const minLat=Math.min.apply(null,lats), maxLat=Math.max.apply(null,lats), minLon=Math.min.apply(null,lons), maxLon=Math.max.apply(null,lons);
       const pad=55, spanLat=maxLat-minLat||0.001, spanLon=maxLon-minLon||0.001;
@@ -81,22 +83,56 @@
         const title=document.createElementNS("http://www.w3.org/2000/svg","title");title.textContent=b.bus_id+" · "+b.route_id+" · "+b.next_stop_id;circle.appendChild(title);svg.appendChild(circle);
       });
     }
-    function refresh() {
+    let liveMode=true;
+    function setRoutes(buses) {
+      const routeIds=Array.from(new Set(buses.map(function(b){return b.route_id;}).filter(Boolean))).sort(), current=$("route").value;
+      $("route").innerHTML='<option value="">All routes</option>'+routeIds.map(function(id){return '<option value="'+escapeHtml(id)+'">'+escapeHtml(id)+'</option>';}).join("");
+      $("route").value=routeIds.includes(current)?current:"";
+    }
+    function refreshLive() {
+      $("status").textContent="Checking live feed…";
+      get("/api/v1/live").then(function(data) {
+        const route=$("route").value;
+        const buses=route?data.buses.filter(function(b){return b.route_id===route;}):data.buses;
+        $("data-badge").textContent=data.stale?"LIVE FEED · STALE":"LIVE FEED · INDEPENDENT SOURCE";
+        $("positions-title").textContent="Live bus positions";
+        $("summary-title").textContent="Live feed status";
+        $("positions-sub").textContent=data.source+". Feed time: "+(data.feed_time_utc?time(data.feed_time_utc):"unavailable")+".";
+        $("bus-label").textContent="Live buses in feed"; $("alert-label").textContent="Live feed alerts";
+        $("run-id").textContent="Source: "+data.network;
+        const predictions=route?data.predictions.filter(function(e){return e.route_id===route;}):data.predictions;
+        $("bus-count").textContent=buses.length; $("alert-count").textContent=data.reported_trip_update_count==null?"—":data.reported_trip_update_count;
+        $("eta-mae").textContent="—"; $("model-name").textContent="Live feed";
+        drawBuses(buses); setRoutes(data.buses);
+        $("alerts").innerHTML='<tr><td colspan="7" class="empty">This feed connector currently reads vehicle positions; no live alert feed is connected.</td></tr>';
+        $("etas").innerHTML=predictions.length?predictions.slice(0,100).map(function(e){
+          return "<tr><td>"+escapeHtml(time(e.arrival_time_utc))+"</td><td>"+escapeHtml(e.route_id||"—")+"</td><td>"+escapeHtml(e.bus_id||"—")+"</td><td>"+escapeHtml(e.target_stop_id||"—")+"</td><td>"+Number(e.predicted_eta_min).toFixed(1)+" min</td><td>GTFS-Realtime</td></tr>";
+        }).join(""):'<tr><td colspan="6" class="empty">No live trip arrival predictions are currently available.</td></tr>';
+        $("alert-label").textContent="Feed trip updates";
+        if(data.stale) $("status").textContent="Feed may be stale · "+(data.feed_age_seconds==null?"unknown age":data.feed_age_seconds+" seconds old");
+        else if(!data.buses.length) $("status").textContent="Feed reachable · 0 vehicles reported · "+(data.feed_age_seconds==null?"timestamp unavailable":data.feed_age_seconds+" seconds old");
+        else $("status").textContent="Live feed · "+buses.length+" buses shown · updated "+new Date().toLocaleTimeString();
+      }).catch(function(error){ $("data-badge").textContent="LIVE FEED UNAVAILABLE"; $("status").textContent="Live feed unavailable: "+error.message; });
+    }
+    function refreshSimulated() {
       $("status").textContent="Refreshing…";
       const route=$("route").value, qs=route?"?route_id="+encodeURIComponent(route):"";
       Promise.all([get("/api/v1/buses"),get("/api/v1/eta"),get("/api/v1/alerts"+qs),get("/api/v1/metrics")]).then(function(values) {
         const busData=values[0], etaData=values[1], alertData=values[2], metricData=values[3];
         const visibleBuses=route?busData.buses.filter(function(b){return b.route_id===route;}):busData.buses;
         const visibleEtas=route?etaData.predictions.filter(function(e){return e.route_id===route;}):etaData.predictions;
+        $("data-badge").textContent="SIMULATED DATA · NOT LIVE BMTC";
+        $("positions-title").textContent="Simulated route positions";
+        $("summary-title").textContent="Simulation run summary";
+        $("positions-sub").textContent="Positions show the latest stored ping for each bus in the selected simulation run.";
+        $("bus-label").textContent="Simulated buses"; $("alert-label").textContent="Current simulated alerts";
         $("run-id").textContent=busData.run_id?"Run "+busData.run_id:"No run loaded";
         $("bus-count").textContent=visibleBuses.length; $("alert-count").textContent=alertData.alerts.length;
         const mae=metricData.metrics && metricData.metrics.eta_mae_min ? metricData.metrics.eta_mae_min.value : null;
         $("eta-mae").textContent=mae!==null?Number(mae).toFixed(2)+" min":"—";
         $("model-name").textContent=visibleEtas && visibleEtas.length?visibleEtas[0].model:"—";
         drawBuses(visibleBuses);
-        const routeIds=Array.from(new Set(busData.buses.map(function(b){return b.route_id;}))).sort(), current=$("route").value;
-        $("route").innerHTML='<option value="">All routes</option>'+routeIds.map(function(id){return '<option value="'+escapeHtml(id)+'">'+escapeHtml(id)+'</option>';}).join("");
-        $("route").value=routeIds.includes(current)?current:"";
+        setRoutes(busData.buses);
         $("alerts").innerHTML=alertData.alerts.length?alertData.alerts.map(function(a){
           return "<tr><td>"+escapeHtml(time(a.timestamp_utc))+"</td><td>"+escapeHtml(a.route_id)+"</td><td><span class=\"tag "+escapeHtml(a.type)+"\">"+escapeHtml(a.type)+"</span></td><td>"+escapeHtml(a.bus_id)+"</td><td>"+escapeHtml(a.target_stop_id||"—")+"</td><td>"+Number(a.severity).toFixed(2)+"</td><td>"+escapeHtml(a.message)+"</td></tr>";
         }).join(""):'<tr><td colspan="7" class="empty">No alerts for this route.</td></tr>';
@@ -106,6 +142,9 @@
         $("status").textContent="Updated "+new Date().toLocaleTimeString();
       }).catch(function(error){$("status").textContent="Service unavailable: "+error.message;});
     }
+    function refresh() { if(liveMode) refreshLive(); else refreshSimulated(); }
+    $("live-mode").addEventListener("click",function(){liveMode=true;$("route").value="";refresh();});
+    $("sim-mode").addEventListener("click",function(){liveMode=false;$("route").value="";refresh();});
     $("refresh").addEventListener("click",refresh); $("route").addEventListener("change",refresh);
     refresh(); setInterval(refresh,15000);
   </script>
