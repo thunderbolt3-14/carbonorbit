@@ -27,6 +27,8 @@ assumption-based scenarios, not measured effects.
 Python 3.12 is the recommended runtime for the locked dependency set. The pinned GTFS ZIP is not included in Git.
 Download the archive pinned in `docs/data_sources.md` to
 `data/raw/bmtc.zip`; the simulator checks its SHA-256 before reading it.
+For the exact download URL, expected SHA-256, clean test commands, run configuration,
+and release gates, see [`docs/release_baseline.md`](docs/release_baseline.md).
 
 ## Run the pipeline
 
@@ -62,5 +64,5 @@ Phase 0 and the Phase 1 research-document set are complete. The team-approved
 evaluation plan and system contracts are recorded in `docs/`. Initial synthetic
 results and robustness outputs are summarized in `docs/simulation_results.md`.
 The run does not establish live BMTC performance. Emissions factor values remain
-unset until compatible sources are recorded. See `docs/phase_roadmap.md` for
-remaining report and dashboard review tasks.
+unset until compatible sources are recorded. Run evidence and figures are in
+`docs/report/evidence/`; see `docs/phase_roadmap.md` for team review gates.

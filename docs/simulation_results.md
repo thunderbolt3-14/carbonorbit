@@ -18,6 +18,8 @@ The run used the pinned unofficial Vonter GTFS snapshot only for route geometry,
 
 Full CSVs and JSON manifests are generated under ignored `data/simulated/88d1eb4fc1efd6c1/`; evaluation files are under ignored `results/generated/88d1eb4fc1efd6c1/`. Recreate them from the repository root with `venv\\Scripts\\python.exe scripts\\carbonorbit.py suite`.
 
+Committed compact evidence for this run is in [`report/evidence/88d1eb4fc1efd6c1/`](report/evidence/88d1eb4fc1efd6c1/): run manifest, metric summaries, route/hour tables and charts, event-threshold sensitivity, reproducibility check, and API latency measurements. Route-level intervals use 10,000 day-cluster bootstrap resamples (seed 20261121); the five held-out service days, rather than individual pings, are the resampling unit.
+
 ## ETA model comparison
 
 The parsimony rule selected **RandomForest** from validation results. The untouched test block contains 21,007 predictions.
@@ -31,6 +33,8 @@ The parsimony rule selected **RandomForest** from validation results. The untouc
 | GradientBoosting | 0.2636 | 0.7141 | 98.51% |
 
 The selected RandomForest test MAE is 75.1% lower than the HistoricalMean baseline and 26.2% lower than Ridge on this simulated split. The small route has only 431 test examples, compared with 2,745 and 17,831 on the other two routes; its RandomForest MAE is 0.5805 minutes. Aggregate performance is therefore dominated by route `BMTC:b202977c0fc0`.
+
+The 95% day-cluster bootstrap intervals for route MAE were 0.3664–0.7921 minutes for 285 BMSITY-YHKOT, 0.1915–0.2555 for 406, and 0.1529–0.1836 for 285-M KBS-BMSIT. These quantify variation across the five simulated test days only; they are not confidence intervals for real BMTC service.
 
 An early run showed near-zero MovingSpeed error because the speed feature exposed the realized future segment duration. That run is invalid and excluded here. The simulator was corrected to derive speed from scheduled leg speed plus independent observation variation, and to derive remaining distance from the noisy observed coordinate. The metrics above are from the corrected run.
 
@@ -47,6 +51,8 @@ Neither selected-threshold test F1 reaches the proposed 0.90 target. At the conf
 
 Event scoring is one-to-one event matching and reports TP, FP, FN, precision, recall and F1. The project has not yet defined a finite set of negative event opportunities, so TN, specificity and event-level accuracy are not reported.
 
+Threshold sensitivity was computed for delay thresholds 3, 5, and 10 minutes and bunching ratios 0.50 and 0.75. On the held-out test days, delay F1 was 0.755, 0.785, and 0.885 respectively; the 10-minute threshold still did not reach 0.90. Bunching at 0.50 had no positive events and is uninformative; at 0.75 its F1 was 0.828. Only the 3-minute delay and 0.75 bunching rules were selected on validation. Test-set sensitivity rows are descriptive and were not used to select the operating rule. See [`event_threshold_sensitivity.csv`](report/evidence/88d1eb4fc1efd6c1/event_threshold_sensitivity.csv) and [`event_threshold_sensitivity.png`](report/evidence/88d1eb4fc1efd6c1/event_threshold_sensitivity.png).
+
 ## Robustness scenarios
 
 The RandomForest model and event thresholds selected on normal validation data were applied unchanged to each scenario's test block.
@@ -62,7 +68,9 @@ These variants are controlled simulator perturbations. They do not measure actua
 ## Interpretation and remaining evidence gaps
 
 - These results validate that the pipeline can generate data, fit candidates, select using validation, score a held-out period and repeat the configured run. They do not establish real-world ETA accuracy or service improvement.
+- Leakage review of the implementation confirmed chronological disjoint splits, validation-only model/threshold selection, and final model fitting on train+validation before test predictions. Test labels are used for scoring only. The simulation feature correction also excludes realized future segment duration and hidden simulator position from the speed/distance features.
 - The GTFS snapshot is unofficial and has documented schedule caveats. All vehicle movements and event truth labels are synthetic.
 - The simulator produces no passenger diversion observations. Emissions factors remain unset, so no carbon or pollutant reduction is calculated.
 - The API/database ingestion ran as part of the pipeline. A manual browser pass confirmed the dashboard loaded 22 buses, 100 alerts, RandomForest and the 0.22-minute test MAE from the populated local API.
+- A serial local Flask development-server check made 50 requests to each API endpoint; all endpoint p95 latencies were under the 1,000 ms project target (buses 381 ms, ETA 269 ms, alerts 32 ms, metrics 31 ms). This is a local functional latency check, not a production concurrency/load test. See [`api_latency.json`](report/evidence/88d1eb4fc1efd6c1/api_latency.json).
 - The project has no live BMTC vehicle data or external-city validation in this run.

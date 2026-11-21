@@ -1,0 +1,11 @@
+event_type,threshold_type,threshold_value,split,selected_on_validation,true_events,alerts,tp,fp,fn,precision,recall,f1,matching_tolerance_seconds
+bunching,bunching_ratio,0.5,test,False,0,0,0,0,0,0.0,0.0,0.0,30
+bunching,bunching_ratio,0.5,validation,False,0,0,0,0,0,0.0,0.0,0.0,30
+bunching,bunching_ratio,0.75,test,False,16,13,12,1,4,0.9230769230769231,0.75,0.8275862068965517,30
+bunching,bunching_ratio,0.75,validation,True,12,11,11,0,1,1.0,0.9166666666666666,0.9565217391304348,30
+delay,delay_minutes,3.0,test,False,98,98,74,24,24,0.7551020408163265,0.7551020408163265,0.7551020408163265,30
+delay,delay_minutes,3.0,validation,True,98,98,76,22,22,0.7755102040816326,0.7755102040816326,0.7755102040816326,30
+delay,delay_minutes,5.0,test,False,93,93,73,20,20,0.7849462365591398,0.7849462365591398,0.7849462365591398,30
+delay,delay_minutes,5.0,validation,False,97,96,68,28,29,0.7083333333333334,0.7010309278350515,0.7046632124352332,30
+delay,delay_minutes,10.0,test,False,87,87,77,10,10,0.8850574712643678,0.8850574712643678,0.8850574712643678,30
+delay,delay_minutes,10.0,validation,False,88,88,64,24,24,0.7272727272727273,0.7272727272727273,0.7272727272727273,30

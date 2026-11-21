@@ -1,0 +1,21 @@
+{
+  "checked_at_utc": "2026-11-20T23:23:55+00:00",
+  "file_count": 8,
+  "files_sha256": {
+    "detector_alerts.csv": "2edae111122510ba31a9e2827330ab3fd46e6fa2e83bf876c9f0c55b169d018f",
+    "eta_labels.csv": "8d9fd26ef2ea453b32f54fd928b36b728e17f74d09b6dc7ba21967eab0f46a07",
+    "event_labels.csv": "fc1d2b87e3e5a89e749d743519b111c05d5341ac441d9e9f9ce29f456cfb668a",
+    "event_sensitivity.csv": "cdeb1478a40ee239c6b528051decf1376732060013a0e57ffeb60bbe7bf0ae2f",
+    "pings.csv": "2329f88adad8f6dfe6d4057aab5608dbbbbad5df6a1964c01d614efa068ff237",
+    "quality_log.csv": "67864c36a2245abddc0f970848769e7e1890ead547edbc2ade60d152632f64de",
+    "stop_observations.csv": "f93f5e5de3120aaa11338769d062550b27c5f4f8cc320f0d56328bb7e433edfc",
+    "stop_truth.csv": "c7090d8dbc6dad9c373ce5d7b5d5836d099161659f9e5f359e79c55abfe52238"
+  },
+  "gtfs_revision": "a4702664d65bfbb37290a5f75effaa24ead1d9dd",
+  "gtfs_sha256": "812c7d472ff116024ca1e0a7ff6e28662f762ca09265da8d5c7e9f6241cf8a45",
+  "repeated_run_matches_previous_manifest": true,
+  "run_id": "88d1eb4fc1efd6c1",
+  "scenario": "normal",
+  "seed": 20261109,
+  "simulator_version": "0.1.0"
+}

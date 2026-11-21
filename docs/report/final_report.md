@@ -2,9 +2,9 @@
 
 **Final project report — current implementation and initial evaluation**
 
-**Report date:** 20 November 2026
+**Report date:** 21 November 2026
 
-**Repository state:** implementation branch `codex/simulation-validation-fixes`
+**Repository state:** see release baseline and evidence package; report content tied to run `88d1eb4fc1efd6c1`
 
 **Evidence status:** reproducible simulation study; not a field evaluation of BMTC operations
 
@@ -104,6 +104,8 @@ Service days were kept in chronological blocks to reduce leakage between adjacen
 
 The selected model and alert thresholds were fixed using training/validation data, then evaluated on the test block.
 
+Leakage review of `src/carbonorbit/analytics.py` confirmed the partition sets are chronological and disjoint; candidate selection and event-threshold selection use validation metrics; model refitting uses train plus validation before predicting test rows. Test labels are only used for final scoring and sensitivity reporting. The corrected simulator speed feature uses scheduled speed plus independent observation variation and observed-coordinate remaining distance, rather than realized future travel duration or hidden simulator progress. This review covers the recorded code path and synthetic schema; it does not establish validity on real AVL data.
+
 ### 5.3 ETA models and metrics
 
 The candidate ladder comprised HistoricalMean, MovingSpeed, Ridge, RandomForest, and GradientBoosting. Candidates were evaluated on common held-out target rows using MAE, RMSE, and the fraction of predictions within two minutes. The project’s parsimony/validation selection rule selected RandomForest. The ETA target is time remaining to the downstream stop, in minutes.
@@ -138,6 +140,10 @@ The conceptual calculation compares displaced private-mode passenger-kilometres 
 
 There were 21,007 test predictions. The selected model’s MAE was 75.1% lower than HistoricalMean and 26.2% lower than Ridge on this test block. By route, RandomForest MAE/sample count was 0.5805 minutes/431 for `BMTC:6f4d45186ddd`, 0.2220/17,831 for `BMTC:b202977c0fc0`, and 0.1638/2,745 for `BMTC:dd9ea3794c96`. The aggregate is dominated by route `BMTC:b202977c0fc0`, while the first route’s much smaller sample makes its estimate less stable.
 
+![Held-out ETA error by route, with day-cluster bootstrap intervals](evidence/88d1eb4fc1efd6c1/eta_error_by_route.png)
+
+![Held-out ETA error by hour](evidence/88d1eb4fc1efd6c1/eta_error_by_hour.png)
+
 ### 6.2 Event detection
 
 | Event | Selected rule | Validation F1 | Test TP / FP / FN | Test precision | Test recall | Test F1 |
@@ -146,6 +152,8 @@ There were 21,007 test predictions. The selected model’s MAE was 75.1% lower t
 | Bunching | 75% scheduled headway | 0.957 | 12 / 1 / 4 | 0.923 | 0.750 | 0.828 |
 
 Neither test F1 reaches the proposed 0.90 target. The high validation F1 for bunching did not carry over fully to test, and only 16 positive test events were available at the selected sensitivity threshold. Event metrics should therefore be interpreted with their counts and simulation definitions, not as established field detection rates.
+
+![Validation and test event threshold sensitivity](evidence/88d1eb4fc1efd6c1/event_threshold_sensitivity.png)
 
 ### 6.3 Robustness
 
@@ -156,6 +164,10 @@ Neither test F1 reaches the proposed 0.90 target. The high validation F1 for bun
 | High dropout (15%) | 18,915 | 0.2236 | 0.694 | 0.640 |
 
 The same model and thresholds selected on normal validation data were used across scenarios. The dropout scenario reduced the number of predictions and event F1, especially for bunching. These results only quantify the chosen simulated perturbations.
+
+Route-level MAE uncertainty was estimated by resampling the five held-out days as clusters (10,000 bootstrap draws). The 95% intervals were 0.3664–0.7921 minutes for 285 BMSITY-YHKOT, 0.1915–0.2555 for 406, and 0.1529–0.1836 for 285-M KBS-BMSIT. These intervals reflect only day-to-day variation in this five-day simulated test block. Route/hour tables and visualizations are available in [`evidence/88d1eb4fc1efd6c1/`](evidence/88d1eb4fc1efd6c1/).
+
+Threshold sensitivity was reported without retuning the selected operating point: test delay F1 was 0.755, 0.785, and 0.885 at 3-, 5-, and 10-minute thresholds. Even 10 minutes remained below the 0.90 target. At the 50% bunching threshold, test data contained zero positive events and zero alerts; at 75%, F1 was 0.828. Only thresholds chosen from validation are used as selected test results; test sensitivity is descriptive.
 
 ### 6.4 Emissions
 
@@ -200,6 +212,8 @@ The next research steps are to obtain and document an authorized, stable BMTC GT
 - Data source and route audit: [`../data_sources.md`](../data_sources.md)
 - Evaluation protocol: [`../evaluation_plan.md`](../evaluation_plan.md)
 - Citation audit: [`../citation_audit.md`](../citation_audit.md)
+- Release baseline and clean-environment instructions: [`../release_baseline.md`](../release_baseline.md)
+- Compact evidence, figures, sensitivity, and reproducibility/latency checks: [`evidence/88d1eb4fc1efd6c1/`](evidence/88d1eb4fc1efd6c1/)
 
 ## References
 
@@ -222,6 +236,6 @@ Bibliographic records, access boundaries, and field-by-field verification status
 15. Ramachandra, T. V., & Shwetmala. (2009). “Emissions from India's transport sector: Statewise synthesis.” *Atmospheric Environment*, 43(34), 5510–5517. https://doi.org/10.1016/j.atmosenv.2009.07.015
 16. International Transport Forum. (2023). *Life-cycle Assessment of Passenger Transport: An Indian Case Study.* https://doi.org/10.1787/2d11e416-en
 17. Ananthakumar, M. R., & Paladugula, A. L. (2017). *Impact of Decarbonisation Strategies on Road Transport Sector Emissions.* GHG Platform India, Phase II. https://ghgplatform-india.org/wp-content/uploads/publications/phase-2/GHGPI-PhaseII-Decarbonisation%20Impact%20on%20Road%20Transport%20Sector%20Emissions-Oct17.pdf
-18. Wills, W. et al. (2019). “A Simple Sinuosity-Based Method using GPS Data to Support Mitigation Policies for Public Buses GHG Emissions.” arXiv:1907.09335. https://arxiv.org/abs/1907.09335
+18. Wills, W., Meirelles, J., Baptista, V. G., Cury, G., & Cerdeira, P. (2019). “A Simple Sinuosity-Based Method using GPS Data to Support Mitigation Policies for Public Buses GHG Emissions.” arXiv:1907.09335. https://arxiv.org/abs/1907.09335
 19. Amogha, B. V., Bairy, P. R., Selvam, S., & Joy, J. D. (2026). “Machine Learning-Based Prediction of Bus Delay and CO2 Emission Estimation Using XGBoost.” In *Data Science and Applications (ICDSA 2025)*, *Lecture Notes in Networks and Systems*, 1795, 216–227. https://doi.org/10.1007/978-3-032-15404-0_19. Publisher abstract only; detailed claims require chapter access.
-20. Ganesh, K. et al. (2012). “Implementation of a Real Time Passenger Information System.” *International Journal of Engineering Science and Management*, 2(2). arXiv:1206.0447. https://arxiv.org/abs/1206.0447
+20. Ganesh et al. (2012). “Implementation of a Real Time Passenger Information System.” arXiv:1206.0447. https://arxiv.org/abs/1206.0447. Journal venue metadata was not independently confirmed in this audit.
