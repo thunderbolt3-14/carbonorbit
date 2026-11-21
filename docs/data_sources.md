@@ -1,12 +1,12 @@
 # Data Sources and Route Plan
 
 **Project:** carbonOrbit — Real-Time Bus Tracking and ETA Prediction for Sustainable Urban Mobility  
-**Status:** Route-level audit complete using a pinned community GTFS fallback; DULT official-feed access and licence remain unverified
-**Reviewed:** 20 November 2026
+**Status:** Static route audit complete; an independent BMTC GTFS-Realtime mirror is connected for live demo use; official BMTC feed access and licence remain unverified
+**Reviewed:** 21 November 2026
 
 ## 1. Purpose
 
-This project needs a real bus network as the geographic and timetable framework, plus simulated GPS observations for testing. We do not currently have access to a verified live BMTC GPS feed. Therefore, generated positions and delays must be clearly labelled as simulated; they must not be presented as observed BMTC vehicle operations.
+This project uses a real bus network as the geographic and timetable framework, simulated GPS observations for reproducible evaluation, and an independent GTFS-Realtime mirror for the live dashboard view. The independent mirror is not operated or endorsed by BMTC. Generated positions and delays remain simulated and must not be presented as observed BMTC vehicle operations. Official BMTC feed access and usage terms remain unverified.
 
 ## 2. Candidate route and timetable data
 
@@ -15,6 +15,11 @@ This project needs a real bus network as the geographic and timetable framework,
 | [DULT Transport Data Hub](https://tdh.dult-karnataka.com/) | Karnataka transport open-data portal; BMTC open-data access is referenced by the Enroute partners | Checked on 20 November 2026; the portal returned a 502 gateway error, so no feed or licence terms could be verified | No official BMTC dataset or licence is claimed in this audit; re-check if access becomes available |
 | [Vonter BMTC GTFS](https://github.com/Vonter/bmtc-gtfs) | Community-maintained GTFS schedule data for routes, stops, trips, shapes and timetables | **Selected reproducible fallback snapshot** at commit `a4702664d65bfbb37290a5f75effaa24ead1d9dd`; used for route geometry and stop sequences only | Explicitly unofficial and derived from Namma BMTC 2.0. The maintainer warns of inaccurate timetables/stop times, interpolated arrivals, and missing or failed routes/stops/timetables. It is not a live GPS feed. ODbL-1.0 applies; preserve attribution and assess share-alike obligations before redistributing adapted database contents. |
 | [Mobility Database feed record](https://mobilitydatabase.org/feeds/gtfs/mdb-2595) | Catalog entry, feed validation, service dates and archived snapshots for the Vonter feed | Useful for reproducible discovery and validation; save the download date and archive used | It catalogs the community feed, so it does not make the source official or validate schedule accuracy. |
+| [Reclaim Chennai India GTFS: Bengaluru BMTC GTFS-Realtime](https://github.com/reclaimchennai/India_GTFS#live-feeds-gtfs-realtime) | Vehicle positions, trip updates, and feed status JSON/protobuf endpoints | Connected to the dashboard through `/api/v1/live`; endpoints are documented as refreshed within about 15 seconds | Independent community-maintained mirror, not an official BMTC feed. Its static BMTC feed cites community GTFS and BMTC app routes. Check freshness and availability at runtime; do not describe this as an official or complete BMTC data service. |
+
+### Live dashboard feed check (21 November 2026)
+
+The dashboard polls `https://maps.reclaim.city/bengaluru/rt/status.json`, `vehicle_positions.json`, and `trip_updates.json` through the local Flask API every 15 seconds. The remote status endpoint responded successfully during this check, but reported **0 vehicles and 0 trip updates**. Therefore, the live integration is connected, but no live buses were available to display at the time of verification. The code reports empty/stale/unavailable states; it does not fill the live view with simulator data. Do not claim that live BMTC tracking was demonstrated until non-empty, fresh feed data is observed.
 
 An industry announcement confirms Bengaluru's BMTC GTFS open-data initiative and points to the DULT portal, but it does not by itself establish the licence or exact dataset currently downloadable. We must record those from the portal/feed metadata when we access it.
 
@@ -70,3 +75,4 @@ The direct 500-D CSB-BMSIT route was considered but not selected because the sna
 3. MobilityData, [Mobility Database: BMTC GTFS feed (mdb-2595)](https://mobilitydatabase.org/feeds/gtfs/mdb-2595), accessed 19 November 2026. This catalog entry does not make the community feed official or establish schedule accuracy.
 4. Mercedes-Benz Research and Development India, WRI India, and Villgro, [“Open Data Fuels Bengaluru’s First-Ever End-to-End Public Transport App Solutions”](https://www.mbrdi.co.in/assets/docs/Open%20Data%20Fuels%20Bengaluru%E2%80%99s%20First-Ever%20End-to-End%20Public%20Transport%20App%20Solutions.pdf), 10 July 2025.
 5. BMS Institute of Technology & Management, [February 2025 newsletter](https://bmsit.ac.in/pdf/newsletter/Feb%202025.pdf), used only for an approximate geotagged campus reference point.
+6. Reclaim Chennai, [India GTFS repository and GTFS-Realtime endpoint documentation](https://github.com/reclaimchennai/India_GTFS#live-feeds-gtfs-realtime), accessed 21 November 2026. Independent service; its stated refresh interval and endpoint availability are not a BMTC service-level guarantee or authorization.

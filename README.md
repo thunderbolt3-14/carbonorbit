@@ -47,8 +47,16 @@ Start the local API and dashboard:
 
     python scripts/carbonorbit.py serve
 
-Open http://127.0.0.1:5000. The dashboard and API display simulated or offline
-evaluation artifacts only; they do not connect to live BMTC vehicles.
+Open http://127.0.0.1:5000. The dashboard opens in **Live feed** mode and polls
+an independent Bengaluru GTFS-Realtime mirror every 15 seconds. It displays
+vehicle positions and stop arrival predictions when that source publishes them.
+The source is not an official BMTC feed. Use **Simulator** to view the stored
+synthetic run and its evaluation metrics. The live feed can be empty or
+unavailable; the dashboard reports its status instead of substituting simulated
+vehicles into the live view.
+
+The live API is available at `/api/v1/live`. The source endpoints, attribution,
+and current verification limits are recorded in `docs/data_sources.md`.
 
 ## Structure
 - docs/ : literature survey, evaluation plan, SDG mapping, diary, report
