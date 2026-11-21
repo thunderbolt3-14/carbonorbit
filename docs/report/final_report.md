@@ -217,17 +217,17 @@ The next research steps are to obtain and document an authorized, stable BMTC GT
 
 ## References
 
-Bibliographic records, access boundaries, and field-by-field verification status are documented in [`../citation_audit.md`](../citation_audit.md). Access date for online records checked in this report: 20 November 2026.
+Bibliographic records, access boundaries, and field-by-field verification status are documented in [`../citation_audit.md`](../citation_audit.md). The cited publisher/proceedings metadata closeout was completed 21 November 2026. Where full papers were not reviewed, claims are limited to abstracts or bibliographic records.
 
 1. Liu, D., Sun, J., & Wang, S. (2020). “BusTime: Which is the Right Prediction Model for My Bus Arrival Time?” arXiv:2003.10373. https://arxiv.org/abs/2003.10373
 2. Taparia, A. (2020). *Bus Journey and Arrival Time Prediction based on Archived AVL/GPS data using Machine Learning.* MSc dissertation, Trinity College Dublin. https://publications.scss.tcd.ie/theses/diss/2020/TCD-SCSS-DISSERTATION-2020-078.pdf
 3. Bhutani, N., Pachal, S., & Achar, A. (2022; v2, 2024). “Public Transit Arrival Prediction: a Seq2Seq RNN Approach.” arXiv:2210.01655. https://arxiv.org/abs/2210.01655
-4. Kumar, B. A. et al. (2025). “Bus Arrival Time Prediction: A Comprehensive Review.” *IEEE Transactions on Intelligent Transportation Systems*, 26(6), 7362–7379. https://doi.org/10.1109/TITS.2025.3545695
+4. Kumar, B. Anil, Singh, R., Shaji, H. E., & Vanajakshi, L. (2025). “Bus Arrival Time Prediction: A Comprehensive Review.” *IEEE Transactions on Intelligent Transportation Systems*, 26(6), 7362–7379. https://doi.org/10.1109/TITS.2025.3545695. Bibliographic metadata verified; full text not reviewed.
 5. Rakhimzhanov, D., & Mansurova, A. (2025). “Bus Travel Time Prediction Under Data Constraints: A Lightweight Deep Learning Approach.” Proceedings of ICCIKE 2025, 444–449. https://doi.org/10.1109/ICCIKE67021.2025.11318207
 6. Mansurova, A., Mussina, A., Aubakirov, S., Nugumanova, A., & Yedilkhan, D. (2025). “From Raw GPS to GTFS: A Real-World Open Dataset for Bus Travel Time Prediction.” *Data*, 10(8), 119. https://doi.org/10.3390/data10080119
 7. Aemmer, Z., Ranjbari, A., & MacKenzie, D. (2022). “Measurement and Classification of Transit Delays Using GTFS-RT Data.” *Public Transport*, 14(2), 263–285. https://doi.org/10.1007/s12469-022-00291-7
 8. Andres, M., & Nair, R. (2017). “A Predictive-Control Framework to Address Bus Bunching.” *Transportation Research Part B: Methodological*, 104, 123–148. https://doi.org/10.1016/j.trb.2017.06.013
-9. Rezazada, M., Nassir, N., & Tanin, E. (2022). “Public Transport Bunching: A Critical Review with Focus on Methods and Findings for Implications for Policy and Future Research.” Australasian Transport Research Forum. https://australasiantransportresearchforum.org.au/papers/?sdata=Public+transport
+9. Rezazada, M., Nassir, N., & Tanin, E. (2022). “Public transport bunching: A critical review with focus on methods and findings for implications for policy and future research.” *Australasian Transport Research Forum 2022 Proceedings*, Adelaide, 28–30 September. [Proceedings PDF](https://australasiantransportresearchforum.org.au/wp-content/uploads/2022/05/ATRF2022_Resubmission_77.pdf)
 10. Rezazada, M., Nassir, N., Tanin, E., & Ceder, A. (2024). “Bus Bunching: A Comprehensive Review from Demand, Supply, and Decision-Making Perspectives.” *Transport Reviews*, 44(4), 766–790. https://doi.org/10.1080/01441647.2024.2313969
 11. Yang, Y., Cheng, J., & Liu, Y. (2024). “An Overview of Solutions to the Bus Bunching Problem in Urban Bus Systems.” *Frontiers of Engineering Management*, 11, 661–675. https://doi.org/10.1007/s42524-024-0297-1
 12. Rawat, S., Abaidullina, A., Alimbayeva, D., Kumar, D., & Kumar, P. (2026). “Real-Time Bus Arrival Prediction and Bus Bunching Prevention Using a Multi-Agent LSTM Approach.” *Frontiers in Built Environment*, 12. https://doi.org/10.3389/fbuil.2026.1894212

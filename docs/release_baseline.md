@@ -1,8 +1,8 @@
 # Reproducibility and release baseline
 
-**Prepared:** 21 November 2026. **Evaluation run:** `88d1eb4fc1efd6c1`. **Base repository commit:** `b4172ab6d518960047a631f00a29dc447c0d1c72`. **Run evidence:** [`report/evidence/88d1eb4fc1efd6c1/`](report/evidence/88d1eb4fc1efd6c1/).
+**Prepared:** 21 November 2026. **Current repository baseline:** `main` at `79f8b3a`; PRs #24, #25, and #26 are merged. **Evaluation run:** `88d1eb4fc1efd6c1`. **Run evidence:** [`report/evidence/88d1eb4fc1efd6c1/`](report/evidence/88d1eb4fc1efd6c1/).
 
-This is the review baseline for the initial synthetic evaluation, not a release tag. The evidence is tied to the run manifest and source revision above. Team review and merge of the accompanying pull request(s) must happen before a release tag or publication.
+This documents a reviewable baseline for the synthetic proof of concept. It is not a release tag. The recorded evaluation used the simulator and analysis implementation included in the run evidence's commit history; later main commits correct event scoring and associated report files. All current project PRs are merged. A project owner can decide whether to tag the synthetic prototype after reviewing the report and evidence. A tag must not imply live-service validation.
 
 ## Environment
 
@@ -15,10 +15,14 @@ This is the review baseline for the initial synthetic evaluation, not a release 
 
 ## Clean setup and verification (Git Bash)
 
+Use a fresh clone directory for this reproduction. The pipeline writes generated run files under `data/simulated/`, evaluation files under `results/generated/`, and the local database at `data/carbonorbit.db`. It does not use the top-level `output/` directory. Avoid reusing a working folder with untracked generated results you need to preserve.
+
 ```bash
 git clone https://github.com/thunderbolt3-14/carbonorbit.git
 cd carbonorbit
-git checkout <reviewed-commit-or-branch>
+git switch main
+git pull --ff-only origin main
+git rev-parse --short HEAD
 py -3.12 -m venv venv
 source venv/Scripts/activate
 python -m pip install -r requirements-lock.txt
@@ -34,6 +38,14 @@ echo '812c7d472ff116024ca1e0a7ff6e28662f762ca09265da8d5c7e9f6241cf8a45  data/raw
 python scripts/carbonorbit.py suite
 ```
 
+The test command should report 34 passing tests for the current baseline. The synthetic suite takes several minutes and writes its run files under `data/simulated/`, evaluation outputs under `results/generated/`, and the local API database at `data/carbonorbit.db`. To open the local dashboard after the suite:
+
+```bash
+python scripts/carbonorbit.py serve --host 127.0.0.1 --port 5000
+```
+
+Then open `http://127.0.0.1:5000/` in a browser. Stop the server with `Ctrl+C` in the Git Bash window. The dashboard identifies the data as simulated; it does not connect to live BMTC vehicles.
+
 On native PowerShell, use `py -3.12 -m venv venv`, `venv\\Scripts\\Activate.ps1`, `Invoke-WebRequest` for the URL above, and `(Get-FileHash data/raw/bmtc.zip -Algorithm SHA256).Hash` to check the archive against the recorded hash. The simulator also checks the pinned input hash.
 
 For the recorded normal run, the seed is `20261109`, period is 9 November–6 December 2026, and the chronological split is 18 train / 5 validation / 5 test days. `python scripts/carbonorbit.py suite` generates normal, noisy-GPS, and high-dropout scenarios. Full-size raw and generated data stay in ignored local folders; compact summaries, charts, and manifests are committed with the evidence package.
@@ -47,6 +59,6 @@ For the recorded normal run, the seed is `20261109`, period is 9 November–6 De
 - Emissions: intentionally unquantified. No compatible approved factors or observed diversion/activity data were available.
 - Evaluation boundary: all service traces, telemetry, arrivals, and event labels in this run are synthetic; the GTFS archive provides route/schedule context only.
 
-## Release gate
+## Release decision
 
-Release tag and external publication are deferred until the team reviews and merges the evidence and documentation PRs, and records any required full-text citation access. No live-service or SDG impact claim may be added based on this simulation alone.
+No PR merge gate remains. Before tagging or externally presenting the project, the project owner should review the corrected report, verify the evidence links render, and accept the recorded citation and evaluation limits. A tag may identify the synthetic proof of concept; it must not state or imply that live BMTC, passenger diversion, emissions reduction, or bunching detection was validated. Production load testing is needed only if a deployment target is planned.
